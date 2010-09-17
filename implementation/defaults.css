@@ -1,0 +1,12 @@
+/* CSS file */
+@namespace patrickmowrer "library://ns.patrickmowrer.com";
+
+patrickmowrer|HSliders
+{
+    skinClass: ClassReference("com.patrickmowrer.skins.HSlidersSkin");
+}
+
+patrickmowrer|VSliders
+{
+    skinClass: ClassReference("com.patrickmowrer.skins.VSlidersSkin");
+}

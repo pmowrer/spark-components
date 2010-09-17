@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               xmlns:ns="library://ns.patrickmowrer.com"
+               xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*"
+               minWidth="955" minHeight="600">
+    
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+    
+    <s:HSlider stepSize="2" maximum="100" x="200" y="200"/>
+    
+    <ns:HSliders
+        maximum="50" values="{[4, 27, 41]}" x="200" y="400"/>
+    
+    <ns:VSliders
+        maximum="50" values="{[4, 27, 41]}" x="400" y="200"/>
+    
+</s:Application>

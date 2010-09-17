@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" version="3">
+  <includeClasses>
+    <classEntry path="com.patrickmowrer.components.supportClasses.Ranges"/>
+    <classEntry path="com.patrickmowrer.skins.TracklessHSliderSkin"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.SlidersBase"/>
+    <classEntry path="com.patrickmowrer.skins.ThumblessHSliderSkin"/>
+    <classEntry path="com.patrickmowrer.components.HSliders"/>
+    <classEntry path="com.patrickmowrer.components.VSliders"/>
+    <classEntry path="com.patrickmowrer.skins.ThumblessVSliderSkin"/>
+    <classEntry path="com.patrickmowrer.skins.TracklessVSliderSkin"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests>
+    <namespaceManifestEntry manifest="../manifest.xml" namespace="library://ns.patrickmowrer.com"/>
+  </namespaceManifests>
+</flexLibProperties>

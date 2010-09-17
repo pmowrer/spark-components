@@ -1,0 +1,16 @@
+# Eclipse settings
+*.project
+*.settings/
+
+# Generated output
+*bin/
+*bin-debug/
+*html-template/
+
+# FlexUnit-generated files
+*.FlexUnitSettings/
+FlexUnitApplication.*
+FlexUnitCompilerApplication.*
+
+# Mac-generated
+.DS_Store
