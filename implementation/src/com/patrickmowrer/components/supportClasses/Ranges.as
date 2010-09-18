@@ -1,6 +1,9 @@
 package com.patrickmowrer.components.supportClasses
 {
+    import flash.events.Event;
+    
     import mx.core.IFactory;
+    import mx.events.FlexEvent;
     
     import spark.components.Group;
     import spark.components.SkinnableContainer;
@@ -24,6 +27,7 @@ package com.patrickmowrer.components.supportClasses
         private var valuesChanged:Boolean = false;
         private var minimumChanged:Boolean = false;
         private var maximumChanged:Boolean = false;
+        private var rangeValueChanged:Boolean = false;
         
         public function Ranges()
         {
@@ -64,6 +68,7 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
+        [Bindable(event="valueCommit")]
         public function get values():Array
         {
             var returnValues:Array = new Array();
@@ -111,6 +116,43 @@ package com.patrickmowrer.components.supportClasses
             createRanges(DEFAULT_VALUES);
         }
         
+        override protected function partAdded(partName:String, instance:Object):void
+        {
+            super.partAdded(partName, instance);
+            
+            if(partName == "range")
+            {
+                (instance as Range).addEventListener(FlexEvent.CREATION_COMPLETE, 
+                    rangeCreationCompleteHandler);
+            }
+        }
+        
+        // Want to avoid multiple value_commit dispatchments every time multiple Range values
+        // are changed.
+        private function rangeCreationCompleteHandler(event:FlexEvent):void
+        {
+            (event.target as Range).removeEventListener(FlexEvent.CREATION_COMPLETE, 
+                rangeCreationCompleteHandler);
+            (event.target as Range).addEventListener(FlexEvent.VALUE_COMMIT, rangeValueCommitHandler);
+        }
+        
+        private function rangeValueCommitHandler(event:FlexEvent):void
+        {
+            invalidateProperties();
+            
+            rangeValueChanged = true;
+        }
+        
+        override protected function partRemoved(partName:String, instance:Object):void
+        {
+            super.partRemoved(partName, instance);
+            
+            if(partName == "range")
+            {
+                (instance as Range).removeEventListener(FlexEvent.VALUE_COMMIT, rangeValueCommitHandler);
+            }
+        }
+        
         override protected function commitProperties():void
         {
             super.commitProperties();
@@ -137,6 +179,13 @@ package com.patrickmowrer.components.supportClasses
                 valuesChanged = false;
                 minimumChanged = false;
                 maximumChanged = false;
+                
+                dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
+            }
+            
+            if(rangeValueChanged)
+            {
+                dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
             }
         }
         

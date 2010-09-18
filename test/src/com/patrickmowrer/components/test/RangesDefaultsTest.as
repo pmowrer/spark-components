@@ -6,15 +6,18 @@ package com.patrickmowrer.components.test
     
     import mx.events.FlexEvent;
     
-    import org.flexunit.async.Async;
+    import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
-    
     import org.hamcrest.assertThat;
     import org.hamcrest.collection.array;
     import org.hamcrest.object.equalTo;
+    import org.morefluent.integrations.flexunit4.*;
 
     public class RangesDefaultsTest
     {		
+        [Rule]
+        public var morefluentRule:IMethodRule = new MorefluentRule(); 
+        
         private var ranges:Ranges;
         
         [Before(async, ui)]
@@ -23,9 +26,8 @@ package com.patrickmowrer.components.test
             ranges = new Ranges();
             ranges.setStyle("skinClass", RangesTestSkin);
             
-            Async.proceedOnEvent(this, ranges, FlexEvent.CREATION_COMPLETE, 25);
-            Async.proceedOnEvent(this, ranges, FlexEvent.UPDATE_COMPLETE, 50);
             UIImpersonator.addChild(ranges);
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges).pass();
         }
         
         [After(async, ui)]
@@ -35,7 +37,7 @@ package com.patrickmowrer.components.test
             ranges = null;
         }
         
-        [Test(async)]
+        [Test]
         public function defaultValuesAre0And100():void
         {
             assertThat(ranges.values, array(0, 100));

@@ -7,8 +7,7 @@ package com.patrickmowrer.components.test
     import org.flexunit.async.Async;
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
-    import org.morefluent.integrations.flexunit4.MorefluentRule;
-    import org.morefluent.integrations.flexunit4.after;
+    import org.morefluent.integrations.flexunit4.*;
 
     public class RangesPropertySettingTest
     {		
@@ -26,8 +25,8 @@ package com.patrickmowrer.components.test
             ranges.minimum = -2;
             ranges.maximum = 12;
             
-            Async.proceedOnEvent(this, ranges, FlexEvent.UPDATE_COMPLETE, 100);
             UIImpersonator.addChild(ranges);
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges).pass();
         }
         
         [After(async, ui)]
@@ -39,10 +38,21 @@ package com.patrickmowrer.components.test
         
         [Test(async)]
         public function valuesOutsideOfMinMaxRangeAreAdjustedToNearestValidValue():void
-        {
+        {   
             ranges.values = [-4, 3, 15];
             
-            after(FlexEvent.UPDATE_COMPLETE, 2000).on(ranges).assert(ranges, "values").equals([-2, 3, 12]);
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges).assert(ranges, "values").equals([-2, 3, 12]);
+        }
+        
+        [Test(async)]
+        public function changeToValuesCausesValueCommitEventToBeDispatchedOnce():void
+        {
+            observing(FlexEvent.VALUE_COMMIT).on(ranges);
+            
+            ranges.values = [1, 2, 3];
+
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges)
+                .assert(ranges).observed(FlexEvent.VALUE_COMMIT, times(1));
         }
         
         [Test(async)]

@@ -12,10 +12,12 @@
     
     <s:HSlider stepSize="2" maximum="100" x="200" y="200"/>
     
-    <ns:HSliders
+    <ns:HSliders id="hSliders"
         maximum="50" values="{[4, 27, 41]}" x="200" y="400"/>
     
     <ns:VSliders
         maximum="50" values="{[4, 27, 41]}" x="400" y="200"/>
+    
+    <s:Label text="{hSliders.values}"/>
     
 </s:Application>

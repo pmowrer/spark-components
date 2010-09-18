@@ -51,7 +51,7 @@
     
     <fx:Declarations>
         <fx:Component id="range">
-            <s:HSlider skinClass="spark.skins.spark.HSliderSkin"/>
+            <s:HSlider name="thumb" skinClass="spark.skins.spark.HSliderSkin"/>
         </fx:Component>
     </fx:Declarations>
     

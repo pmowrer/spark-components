@@ -16,7 +16,9 @@ package com.patrickmowrer.components.supportClasses
         
         override protected function partAdded(partName:String, instance:Object):void
         {
-            if(partName == "range" && instance is SliderBase)
+            super.partAdded(partName, instance);
+            
+            if(partName == "range" && track && instance is SliderBase)
             {
                 (instance as SliderBase).track = track.track;
             }
