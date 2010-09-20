@@ -12,8 +12,8 @@
     
     <s:HSlider stepSize="2" maximum="100" x="200" y="200"/>
     
-    <ns:HSliders id="hSliders"
-        maximum="50" values="{[4, 27, 41]}" x="200" y="400"/>
+    <ns:HSliders id="hSliders" minimum="50" width="500"
+        maximum="100" values="{[53, 67, 80]}" x="200" y="400"/>
     
     <ns:VSliders
         maximum="50" values="{[4, 27, 41]}" x="400" y="200"/>

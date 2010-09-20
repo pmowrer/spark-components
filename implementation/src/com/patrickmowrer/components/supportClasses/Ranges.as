@@ -131,9 +131,10 @@ package com.patrickmowrer.components.supportClasses
         // are changed.
         private function rangeCreationCompleteHandler(event:FlexEvent):void
         {
-            (event.target as Range).removeEventListener(FlexEvent.CREATION_COMPLETE, 
-                rangeCreationCompleteHandler);
-            (event.target as Range).addEventListener(FlexEvent.VALUE_COMMIT, rangeValueCommitHandler);
+            var range:Range = event.target as Range;
+            
+            range.removeEventListener(FlexEvent.CREATION_COMPLETE, rangeCreationCompleteHandler);
+            range.addEventListener(FlexEvent.VALUE_COMMIT, rangeValueCommitHandler);
         }
         
         private function rangeValueCommitHandler(event:FlexEvent):void
@@ -187,6 +188,16 @@ package com.patrickmowrer.components.supportClasses
             {
                 dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
             }
+        }
+        
+        protected function getRangeInstanceAt(index:uint):Range
+        {
+            return rangeInstances[index];
+        }
+        
+        protected function get numberOfRangeInstances():uint
+        {
+            return rangeInstances.length;
         }
         
         private function createRanges(values:Array):void
