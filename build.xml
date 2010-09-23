@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="iso-8859-1"?> 
+<project name="Spark components - patrickmowrer.com" basedir="." default="package">
+
+    <!-- Enable system environment vars to be referenced -->
+    <property environment="env" />
+
+    <!-- Construct library filename from version properties file -->
+    <property file="${basedir}/version.properties" />
+    <property name="build.finalName" 
+              value="${build.filename}-${build.version}" 
+    />
+
+    <!-- Component namespace definition -->
+    <property name="src.namespace" value="library://ns.patrickmowrer.com" />
+
+    <!-- Source locations -->
+    <property name="src.dir" location="${basedir}/implementation/src" />    
+    <property name="test.dir" location="${basedir}/test/src" />    
+    <property name="test.lib.dir" location="${test.dir}/../libs" />
+    <property name="build.lib.dir" location="${basedir}/libs/build" />
+
+    <!-- Build generation locations -->
+    <property name="dist.dir" location="${basedir}/dist" />
+    <property name="dist.bin.dir" location="${dist.dir}/bin" />
+    <property name="dist.doc.dir" location="${dist.dir}/doc" />
+    <property name="report.dir" location="${dist.dir}/report" />
+    <property name="report.flexunit.dir" location="${report.dir}/flexunit" />
+
+    <!-- Flex SDK source -->
+    <property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+
+    <!-- Flex & FlexUnit Ant Task locations -->
+    <taskdef resource="flexTasks.tasks" 
+             classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"
+    />
+    <taskdef resource="flexUnitTasks.tasks" 
+             classpath="${build.lib.dir}/flexUnitTasks-4.1.0-RC1.77.jar"
+    />
+
+    <!-- Target definitions -->
+    <target name="clean">
+        <delete dir="${dist.dir}" />
+        <delete dir="${dist.bin.dir}" />
+        <delete dir="${dist.doc.dir}" />
+        <delete dir="${report.dir}" />
+        <delete dir="${report.flexunit.dir}" />
+    </target>
+
+    <target name="init">
+        <mkdir dir="${dist.dir}" />
+        <mkdir dir="${dist.bin.dir}" />
+        <mkdir dir="${dist.doc.dir}" />
+        <mkdir dir="${report.dir}" />
+        <mkdir dir="${report.flexunit.dir}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <compc output="${dist.bin.dir}/${build.finalName}.swc">
+            <include-sources dir="${src.dir}">
+                <include name="**/*.as" />
+                <include name="**/*.mxml" />
+            </include-sources>
+            <source-path path-element="${src.dir}" />
+
+            <!-- Crucial to keep SWC size down -->
+            <external-library-path append="true" dir="${FLEX_HOME}/frameworks/libs">
+                <include name="*.swc" />
+            </external-library-path>
+
+            <!-- Default skins for the components -->
+            <include-file name="defaults.css" path="${src.dir}/defaults.css" />
+
+            <!-- Custom component namespace -->
+            <namespace uri="${src.namespace}" manifest="${src.dir}/manifest.xml" />
+                   
+            <include-namespaces uri="${src.namespace}" />
+
+            <!-- Must be included in order to compile in custom namespace above.
+                 See: http://bugs.adobe.com/jira/browse/SDK-22032 -->
+            <namespace uri="library://ns.adobe.com/flex/spark"
+                       manifest="${FLEX_HOME}/frameworks/spark-manifest.xml"
+            /> 
+            <namespace uri="http://ns.adobe.com/mxml/2009" 
+                       manifest="${FLEX_HOME}/frameworks/mxml-2009-manifest.xml"
+            /> 
+            <namespace uri="http://www.adobe.com/2006/mxml"
+                       manifest="${FLEX_HOME}/frameworks/mxml-manifest.xml"
+            /> 
+                   
+            <metadata>
+                <creator>Patrick Mowrer</creator>
+            </metadata>
+        </compc>
+    </target>
+
+    <target name="test" depends="compile">
+        <!-- Compile TestRunner with source library -->
+        <mxmlc file="${test.dir}/TestRunner.mxml" output="${dist.bin.dir}/TestRunner.swf">
+            <library-path dir="${dist.bin.dir}" append="true">
+                <include name="${build.finalName}.swc" />
+            </library-path>
+            <library-path dir="${test.lib.dir}" append="true">
+                <include name="*.swc" />
+            </library-path>
+        </mxmlc>
+
+        <!-- Execute the TestRunner.swf to display test results -->
+        <flexunit swf="${dist.bin.dir}/TestRunner.swf"
+                  toDir="${report.flexunit.dir}"
+                  verbose="true" 
+        />
+    </target>
+
+    <target name="report" depends="test">
+        <!-- Generate readable report for FlexUnit -->
+        <junitreport todir="${report.flexunit.dir}">
+            <fileset dir="${report.flexunit.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${report.flexunit.dir}/html" />
+        </junitreport>
+    </target>
+
+    <target name="package" depends="report">
+        <!-- Create distribution for binaries with docs -->
+        <zip destfile="${dist.dir}/${build.finalName}.zip">
+            <zipfileset dir="${dist.doc.dir}" prefix="docs" />
+            <zipfileset dir="${dist.bin.dir}">
+                <include name="${build.finalName}.swc" />
+            </zipfileset>
+        </zip>
+    </target>
+</project>
