@@ -4,20 +4,23 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:ns="library://ns.patrickmowrer.com"
                xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*"
-               minWidth="955" minHeight="600">
+               minWidth="955" minHeight="600"
+               xmlns:local="*">
     
     <fx:Declarations>
         <!-- Place non-visual elements (e.g., services, value objects) here -->
     </fx:Declarations>
     
-    <s:HSlider stepSize="2" maximum="100" x="200" y="200"/>
+    <local:SliderModifiers x="100" y="100">
+        <local:slider>
+            <s:HSlider />            
+        </local:slider>
+    </local:SliderModifiers>  
     
-    <ns:HSliders id="hSliders" minimum="50" width="500"
-        maximum="100" values="{[53, 67, 80]}" x="200" y="400"/>
-    
-    <ns:VSliders
-        maximum="50" values="{[4, 27, 41]}" x="400" y="200"/>
-    
-    <s:Label text="{hSliders.values}"/>
-    
+    <local:SliderModifiers x="100" y="300" valueField="values">
+        <local:slider>
+            <ns:HSliders width="500" minimum="50" maximum="100" values="{[53, 67, 80]}" slideDuration="1000" />        
+        </local:slider>
+    </local:SliderModifiers>  
+                   
 </s:Application>
