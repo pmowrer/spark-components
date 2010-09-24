@@ -20,10 +20,12 @@ package com.patrickmowrer.components.supportClasses
         [SkinPart(required="false")]
         public var track:SliderBase;
         
-        private var thumbOverlapAllowed:Boolean = false;
+        private var _allowThumbOverlap:Boolean = false;
+        
         private var minimumChanged:Boolean = false;
         private var maximumChanged:Boolean = false;
         private var snapIntervalChanged:Boolean = false;
+        private var allowThumbOverlapChanged:Boolean = false;
         
         private var currentTrackThumb:Range;
         
@@ -34,11 +36,17 @@ package com.patrickmowrer.components.supportClasses
         
         public function get allowThumbOverlap():Boolean
         {
-            return thumbOverlapAllowed;
+            return _allowThumbOverlap;
         }
         
         public function set allowThumbOverlap(value:Boolean):void
         {
+            if(_allowThumbOverlap != value)
+            {
+                _allowThumbOverlap = value;
+                allowThumbOverlapChanged = true;
+                invalidateProperties();
+            }
         }
         
         override public function set minimum(value:Number):void
@@ -86,6 +94,38 @@ package com.patrickmowrer.components.supportClasses
                 
                 minimumChanged = false;
                 maximumChanged = false;
+            }
+            
+            if(allowThumbOverlapChanged)
+            {
+                var thumb:Range;
+                var firstIndex:int = 0;
+                var lastIndex:int = numberOfRangeInstances - 1;
+                
+                for(var index:int = 0; index <= lastIndex; index++)
+                {
+                    thumb = getRangeInstanceAt(index);
+                    
+                    if(allowThumbOverlap)
+                    {
+                        if(index != firstIndex)
+                        {
+                            thumb.minimum = values[index];
+                        }
+                        
+                        if(index != lastIndex)
+                        {
+                            thumb.maximum = values[index + 1];
+                        }
+                    }
+                    else
+                    {
+                        thumb.minimum = minimum;
+                        thumb.maximum = maximum;
+                    }
+                }
+                
+                allowThumbOverlapChanged = false;
             }
         }
         

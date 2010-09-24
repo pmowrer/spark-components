@@ -91,14 +91,21 @@ package com.patrickmowrer.components.supportClasses
         [Bindable(event="valueCommit")]
         public function get values():Array
         {
-            var returnValues:Array = new Array();
-            
-            for(var index:int = 0; index < rangeInstances.length; index++)
+            if(valuesChanged)
             {
-                returnValues.push(rangeInstances[index].value);
+                return newValues;
             }
-            
-            return returnValues;
+            else
+            {
+                var returnValues:Array = new Array();
+                
+                for(var index:int = 0; index < rangeInstances.length; index++)
+                {
+                    returnValues.push(rangeInstances[index].value);
+                }
+                
+                return returnValues;
+            }
         }
         
         public function set values(newValues:Array):void

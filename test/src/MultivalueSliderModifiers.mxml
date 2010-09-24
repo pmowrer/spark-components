@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:SinglevalueSliderModifiers 
+    xmlns:fx="http://ns.adobe.com/mxml/2009" 
+    xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:mx="library://ns.adobe.com/flex/mx" 
+    xmlns:local="*"
+    creationComplete="init()"
+>
+
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+        <s:VGroup id="thumbCountGroup">
+            <s:Label text="Thumb count:" />
+            <s:NumericStepper id="thumbCountInput" />
+        </s:VGroup>
+    </fx:Declarations>
+    
+    <fx:Script>
+        <![CDATA[
+            import mx.binding.utils.BindingUtils;
+            
+            private function init():void
+            {
+                contentGroup.addElement(thumbCountGroup);
+                
+                BindingUtils.bindSetter(updateThumbCount, thumbCountInput, "value");
+            }
+            
+            private function updateThumbCount(value:int):void
+            {
+                var values:Array = [];
+                
+                for(var i:int = slider.minimum; i < slider.minimum + value; i++)
+                {
+                    values.push(i);
+                }
+                
+                slider.values = values;
+                
+                if(slider.hasOwnProperty("thumbCount"))
+                {
+                    slider.thumbCount = values.length;
+                }
+            }
+            
+            override protected function get valueField():String
+            {
+                return "values";
+            }
+            
+            override protected function addInputListeners():void
+            {
+                super.addInputListeners();
+                
+                thumbCountInput.addEventListener(Event.CHANGE, changeHandler);
+            }
+            
+            override protected function updateModifierValues():void
+            {
+                thumbCountInput.value = slider.values.length;
+
+                super.updateModifierValues();
+            }
+            
+        ]]>
+    </fx:Script>
+    
+
+    
+</local:SinglevalueSliderModifiers>

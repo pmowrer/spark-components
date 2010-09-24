@@ -9,13 +9,17 @@
     <fx:Script>
         <![CDATA[
             import mx.binding.utils.BindingUtils;
+            import mx.binding.utils.ChangeWatcher;
             import mx.core.IVisualElement;
             import mx.events.FlexEvent;
             
-            public var valueField:String = "value";
+            private var _slider:Object;    
             
-            private var _slider:Object;
-                    
+            public function get slider():Object
+            {
+                return _slider;
+            }
+            
             public function set slider(slider:Object):void
             {
                 _slider = slider;
@@ -24,47 +28,57 @@
                 var max:Number = _slider.maximum;
                 var snap:Number = _slider.snapInterval;
                 
-                BindingUtils.bindProperty(_slider, "minimum", minInput, "value");
-                BindingUtils.bindProperty(_slider, "maximum", maxInput, "value");
-                BindingUtils.bindProperty(_slider, "snapInterval", snapInput, "value");
+                BindingUtils.bindProperty(slider, "minimum", minInput, "value");
+                BindingUtils.bindProperty(slider, "maximum", maxInput, "value");
+                BindingUtils.bindProperty(slider, "snapInterval", snapInput, "value");
                 
-                _slider.minimum = min;
-                _slider.maximum = max;
-                _slider.snapInterval = snap;
+                slider.minimum = min;
+                slider.maximum = max;
+                slider.snapInterval = snap;
                 
                 updateModifierValues();
                 
                 addElement(slider as IVisualElement);
             }
             
+            protected function get valueField():String
+            {
+                return "value";
+            }
+            
             private function init():void
             {
-                minInput.addEventListener(Event.CHANGE, changeHandler);
-                maxInput.addEventListener(Event.CHANGE, changeHandler);
-                snapInput.addEventListener(Event.CHANGE, changeHandler);
-                
-                (_slider as IEventDispatcher).addEventListener(FlexEvent.UPDATE_COMPLETE, changeHandler);
+                addInputListeners();
                 
                 updateValueDisplay();
             }
             
-            private function changeHandler(event:Event):void
+            protected function addInputListeners():void
+            {
+                minInput.addEventListener(Event.CHANGE, changeHandler);
+                maxInput.addEventListener(Event.CHANGE, changeHandler);
+                snapInput.addEventListener(Event.CHANGE, changeHandler);  
+                
+                (slider as IEventDispatcher).addEventListener(FlexEvent.UPDATE_COMPLETE, changeHandler);
+            }
+            
+            protected function changeHandler(event:Event):void
             {
                 updateModifierValues();               
             }    
               
-            private function updateModifierValues():void
+            protected function updateModifierValues():void
             {
-                minInput.value = _slider.minimum;
-                maxInput.value = _slider.maximum;
-                snapInput.value = _slider.snapInterval;     
+                minInput.value = slider.minimum;
+                maxInput.value = slider.maximum;
+                snapInput.value = slider.snapInterval;    
              
                 updateValueDisplay();
             }
             
             private function updateValueDisplay():void
             {
-                valueDisplay.text = "Value(s): " + _slider[valueField];                
+                valueDisplay.text = "Value(s): " + slider[valueField];                
             }
             
         ]]>
@@ -77,7 +91,7 @@
             />
     </s:layout>
     
-    <s:HGroup>
+    <s:HGroup id="contentGroup">
         <s:VGroup>
             <s:Label text="Minimum:" />
             <s:NumericStepper id="minInput" value="0" maximum="100" />            

@@ -68,12 +68,12 @@ package com.patrickmowrer.components.test
         }
         
         [Test]
-        public function ifNotAllowingOverlappingThumbsEachValueMustBeLimitedByNextIndexInValues():void
+        public function disallowingOverlappingThumbsForcesValuesToBeLessOrEqualToNextIndexValue():void
         {
-            sliders.values[5, 10, 0];
-            sliders.allowThumbOverlap = false;
+            sliders.values = [5, 10, 2];
+            sliders.allowThumbOverlap = true;
             
-            after(FlexEvent.UPDATE_COMPLETE).on(sliders).assert(sliders, "values").equals([0, 1, 2]);
+            after(FlexEvent.UPDATE_COMPLETE).on(sliders).assert(sliders, "values").equals([2, 2, 2]);
         }
         
         [Test]

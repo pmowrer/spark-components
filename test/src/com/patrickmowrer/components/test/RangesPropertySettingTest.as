@@ -7,6 +7,9 @@ package com.patrickmowrer.components.test
     import org.flexunit.async.Async;
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
+    import org.hamcrest.*;
+    import org.hamcrest.collection.array;
+    import org.hamcrest.object.hasProperties;
     import org.morefluent.integrations.flexunit4.*;
 
     public class RangesPropertySettingTest
@@ -35,6 +38,21 @@ package com.patrickmowrer.components.test
         {
             UIImpersonator.removeChild(ranges);			
             ranges = null;
+        }
+        
+        [Test(async)]
+        public function setPropertiesCanBeRetrievedImmediately():void
+        {
+            ranges.values = [99, 999, 9999];
+            ranges.minimum = 99;
+            ranges.maximum = 9999;
+            
+            assertThat(ranges, hasProperties(
+                {
+                    "values": array(99, 999, 9999),
+                    "minimum": 99,
+                    "maximum": 9999
+                }));
         }
         
         [Test(async)]
