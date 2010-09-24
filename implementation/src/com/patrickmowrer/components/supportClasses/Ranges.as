@@ -16,17 +16,21 @@ package com.patrickmowrer.components.supportClasses
         
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;
+        private const DEFAULT_SNAP_INTERVAL:Number = 1;
+        private const DEFAULT_STEP_SIZE:Number = 1;
         private const DEFAULT_VALUES:Array = [0, 100];
         
         private var rangeInstances:Vector.<Range>;
         
-        private var newValues:Array;
         private var _minimum:Number = DEFAULT_MINIMUM;
         private var _maximum:Number = DEFAULT_MAXIMUM;
-        
-        private var valuesChanged:Boolean = false;
+        private var _snapInterval:Number = DEFAULT_SNAP_INTERVAL;
+        private var newValues:Array;
+         
         private var minimumChanged:Boolean = false;
         private var maximumChanged:Boolean = false;
+        private var snapIntervalChanged:Boolean = false;
+        private var valuesChanged:Boolean = false;
         private var rangeValueChanged:Boolean = false;
         
         public function Ranges()
@@ -63,6 +67,22 @@ package com.patrickmowrer.components.supportClasses
             {
                 _maximum = value;
                 maximumChanged = true;
+                
+                invalidateProperties();
+            }
+        }
+        
+        public function get snapInterval():Number
+        {
+            return _snapInterval;
+        }
+        
+        public function set snapInterval(value:Number):void
+        {
+            if(value != _snapInterval)
+            {
+                _snapInterval = value;
+                snapIntervalChanged = true;
                 
                 invalidateProperties();
             }
@@ -127,8 +147,8 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        // Want to avoid multiple value_commit dispatchments every time multiple Range values
-        // are changed.
+        // Want to avoid dispatching multiple value_commit every time multiple Range values
+        // are changed, including when they are created
         private function rangeCreationCompleteHandler(event:FlexEvent):void
         {
             var range:Range = event.target as Range;
@@ -166,7 +186,7 @@ package com.patrickmowrer.components.supportClasses
                     _maximum = _minimum;
             }
 
-            if(valuesChanged || minimumChanged || maximumChanged)
+            if(valuesChanged || minimumChanged || maximumChanged || snapIntervalChanged)
             {
                 if(!newValues)
                 {
@@ -180,6 +200,7 @@ package com.patrickmowrer.components.supportClasses
                 valuesChanged = false;
                 minimumChanged = false;
                 maximumChanged = false;
+                snapIntervalChanged = false;
                 
                 dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
             }
@@ -220,6 +241,7 @@ package com.patrickmowrer.components.supportClasses
             instance.value = value;
             instance.minimum = _minimum;
             instance.maximum = _maximum;
+            instance.snapInterval = _snapInterval;
         }
         
         private function removeAllRanges():void

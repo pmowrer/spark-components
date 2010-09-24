@@ -24,6 +24,7 @@ package com.patrickmowrer.components.test
             ranges.values = [-2, 3, 6, 9, 12];
             ranges.minimum = -2;
             ranges.maximum = 12;
+            // Not explicitly setting snapInterval here because its a special case 
             
             UIImpersonator.addChild(ranges);
             after(FlexEvent.UPDATE_COMPLETE).on(ranges).pass();
@@ -85,6 +86,14 @@ package com.patrickmowrer.components.test
             ranges.minimum = 14;
             
             after(FlexEvent.UPDATE_COMPLETE).on(ranges).assert(ranges, "minimum").equals(12);
+        }
+        
+        [Test(async)]
+        public function valuesAreAdjustedToBeMultiplesOfSnapIntervalUnlessTheyAreEitherMinOrMax():void
+        {
+            ranges.snapInterval = 3;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges).assert(ranges, "values").equals([-2, 4, 7, 10, 12]);
         }
     }
 }

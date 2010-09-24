@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <s:Skin 
     xmlns:fx="http://ns.adobe.com/mxml/2009" 
     xmlns:s="library://ns.adobe.com/flex/spark" 
     xmlns:fb="http://ns.adobe.com/flashbuilder/2009" 
 >
+
     <fx:Metadata>
-        [HostComponent("com.patrickmowrer.components.supportClasses.Ranges")]
+        [HostComponent("com.patrickmowrer.components.supportClasses.SlidersBase")]
     </fx:Metadata>
     
     <fx:Declarations>
         <fx:Component id="range">
-            <s:Range name="thumb" skinClass="spark.skins.SparkSkin" />
+            <s:HSlider name="thumb" skinClass="spark.skins.spark.HSliderSkin"/>
         </fx:Component>
     </fx:Declarations>
     
@@ -20,13 +20,7 @@
         <s:State name="disabled" />
     </s:states>
     
-    <!--- Defines the appearance of the SkinnableContainer class's background. -->
-    <s:Rect id="background" left="0" right="0" top="0" bottom="0">
-        <s:fill>
-            <!--- @private -->
-            <s:SolidColor id="bgFill" color="#FFFFFF"/>
-        </s:fill>
-    </s:Rect>
+    <s:HSlider id="track" />
     
     <!--
         Note: setting the minimum size to 0 here so that changes to the host component's

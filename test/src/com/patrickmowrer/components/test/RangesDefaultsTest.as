@@ -54,5 +54,11 @@ package com.patrickmowrer.components.test
         {
             assertThat(ranges.maximum, equalTo(100));
         }
+        
+        [Test]
+        public function defaultSnapIntervalIs1():void
+        {
+            assertThat(ranges.snapInterval, equalTo(1));
+        }
     }
 }

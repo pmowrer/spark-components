@@ -13,45 +13,76 @@ package com.patrickmowrer.components.supportClasses
     import spark.components.supportClasses.Range;
     import spark.components.supportClasses.SliderBase;
 
+    [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
+
     public class SlidersBase extends Ranges
     {
         [SkinPart(required="false")]
         public var track:SliderBase;
         
-        private var minimumChanged:Boolean;
-        private var maximumChanged:Boolean;
+        private var thumbOverlapAllowed:Boolean = false;
+        private var minimumChanged:Boolean = false;
+        private var maximumChanged:Boolean = false;
+        private var snapIntervalChanged:Boolean = false;
+        
+        private var currentTrackThumb:Range;
         
         public function SlidersBase()
         {
             super();
         }
         
+        public function get allowThumbOverlap():Boolean
+        {
+            return thumbOverlapAllowed;
+        }
+        
+        public function set allowThumbOverlap(value:Boolean):void
+        {
+        }
+        
         override public function set minimum(value:Number):void
         {
-            super.minimum = value;
-            
-            minimumChanged = true;
-            
-            invalidateProperties();
+            if(minimum != value)
+            {
+                super.minimum = value;
+                minimumChanged = true;            
+                invalidateProperties();
+            }
         }
         
         override public function set maximum(value:Number):void
         {
-            super.maximum = value;
-            
-            maximumChanged = true;
-            
-            invalidateProperties();
+            if(maximum != value)
+            {
+                super.maximum = value;
+                maximumChanged = true;
+                invalidateProperties();
+            }
+        }
+        
+        override public function set snapInterval(value:Number):void
+        {
+            if(snapInterval != value)
+            {
+                super.snapInterval = value;
+                snapIntervalChanged = true;
+                invalidateProperties();
+            }
         }
         
         override protected function commitProperties():void
         {
             super.commitProperties();
             
-            if(minimumChanged || maximumChanged)
+            if(minimumChanged || maximumChanged || snapIntervalChanged)
             {
-                track.minimum = minimum;
-                track.maximum = maximum;
+                if(track)
+                {
+                    track.minimum = minimum;
+                    track.maximum = maximum;
+                    track.snapInterval = snapInterval;
+                }
                 
                 minimumChanged = false;
                 maximumChanged = false;
@@ -68,12 +99,14 @@ package com.patrickmowrer.components.supportClasses
                 
                 thumb.track = track.track;
                 thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
+                track.addEventListener(Event.CHANGE, trackChangeHandler);
             }
             else if(partName == "track" && instance is SliderBase)
             {
                 var track:SliderBase = track as SliderBase;
                 
                 track.addEventListener(MouseEvent.MOUSE_DOWN, trackMouseDownHandler, true);
+                track.setStyle("slideDuration", getStyle("slideDuration"));
             }
         }
         
@@ -102,23 +135,22 @@ package com.patrickmowrer.components.supportClasses
             var trackPointValue:Number = trackPointToValue(trackRelative.x, trackRelative.y);
             var thumb:SliderBase = nearestThumbInstanceTo(trackPointValue);
             
+            currentTrackThumb = thumb;
+            
+            // Let track figure out new value, if any, and play animation,
+            // and then do more work on track's change event
             track.thumb = thumb.thumb;
             track.value = thumb.value;
             track.validateNow();
-
-            onTrackChangeEventUpdateValueOf(thumb);
         }
-        
-        private function onTrackChangeEventUpdateValueOf(thumb:Range):void
+       
+        private function trackChangeHandler(event:Event):void
         {
-            track.addEventListener(Event.CHANGE, trackChangeHandler);
-            
-            function trackChangeHandler(event:Event):void
+            if(currentTrackThumb)
             {
-                thumb.value = track.value;
-                
+                currentTrackThumb.value = track.value;
+                currentTrackThumb = null;                  
                 track.thumb = null;
-                track.removeEventListener(Event.CHANGE, trackChangeHandler);
             }
         }
         
