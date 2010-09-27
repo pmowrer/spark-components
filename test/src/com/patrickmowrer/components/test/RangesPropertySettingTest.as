@@ -46,12 +46,14 @@ package com.patrickmowrer.components.test
             ranges.values = [99, 999, 9999];
             ranges.minimum = 99;
             ranges.maximum = 9999;
+            ranges.allowOverlap = true;
             
             assertThat(ranges, hasProperties(
                 {
                     "values": array(99, 999, 9999),
                     "minimum": 99,
-                    "maximum": 9999
+                    "maximum": 9999,
+                    "allowOverlap": true
                 }));
         }
         
@@ -112,6 +114,24 @@ package com.patrickmowrer.components.test
             ranges.snapInterval = 3;
             
             after(FlexEvent.UPDATE_COMPLETE).on(ranges).assert(ranges, "values").equals([-2, 4, 7, 10, 12]);
+        }
+        
+        [Test(async)]
+        public function overlappingValuesAreAdjustedWhenOverlapIsntAllowed():void
+        {
+            ranges.allowOverlap = false;
+            ranges.values = [5, 10, 2];
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges).assert(ranges, "values").equals([2, 2, 2]);
+        }
+        
+        [Test]
+        public function overlappingValuesCanBeAllowed():void
+        {
+            ranges.allowOverlap = true;
+            ranges.values = [5, 10, 2];
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(ranges).assert(ranges, "values").equals([5, 10, 2]);
         }
     }
 }

@@ -11,6 +11,7 @@ package com.patrickmowrer.components.test
     import org.hamcrest.assertThat;
     import org.hamcrest.collection.array;
     import org.hamcrest.object.equalTo;
+    import org.hamcrest.object.isFalse;
     import org.morefluent.integrations.flexunit4.*;
 
     public class RangesDefaultsTest
@@ -59,6 +60,12 @@ package com.patrickmowrer.components.test
         public function defaultSnapIntervalIs1():void
         {
             assertThat(ranges.snapInterval, equalTo(1));
+        }
+        
+        [Test]
+        public function defaultAllowOverlapIsFalse():void
+        {
+            assertThat(ranges.allowOverlap, isFalse());
         }
     }
 }

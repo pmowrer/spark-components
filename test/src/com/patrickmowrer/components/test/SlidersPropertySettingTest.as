@@ -66,20 +66,5 @@ package com.patrickmowrer.components.test
                 .assert(sliders.track, "maximum").equals(10000).and()
                 .assert(sliders.track, "snapInterval").equals(100);
         }
-        
-        [Test]
-        public function disallowingOverlappingThumbsForcesValuesToBeLessOrEqualToNextIndexValue():void
-        {
-            sliders.values = [5, 10, 2];
-            sliders.allowThumbOverlap = true;
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(sliders).assert(sliders, "values").equals([2, 2, 2]);
-        }
-        
-        [Test]
-        public function disallowingOverlappingThumbsAdjustsExistingValuesToBeLessThanNextIndex():void
-        {
-            
-        }
     }
 }

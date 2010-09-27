@@ -1,11 +1,12 @@
 package com.patrickmowrer.components.supportClasses
 {
     import flash.events.Event;
+    import flash.events.MouseEvent;
     
     import mx.core.IFactory;
+    import mx.core.IVisualElement;
     import mx.events.FlexEvent;
     
-    import spark.components.Group;
     import spark.components.SkinnableContainer;
     import spark.components.supportClasses.Range;
     
@@ -19,6 +20,7 @@ package com.patrickmowrer.components.supportClasses
         private const DEFAULT_SNAP_INTERVAL:Number = 1;
         private const DEFAULT_STEP_SIZE:Number = 1;
         private const DEFAULT_VALUES:Array = [0, 100];
+        private const DEFAULT_ALLOW_OVERLAP:Boolean = false;
         
         private var rangeInstances:Vector.<Range>;
         
@@ -26,11 +28,13 @@ package com.patrickmowrer.components.supportClasses
         private var _maximum:Number = DEFAULT_MAXIMUM;
         private var _snapInterval:Number = DEFAULT_SNAP_INTERVAL;
         private var newValues:Array;
+        private var _allowOverlap:Boolean = DEFAULT_ALLOW_OVERLAP;
          
         private var minimumChanged:Boolean = false;
         private var maximumChanged:Boolean = false;
         private var snapIntervalChanged:Boolean = false;
         private var valuesChanged:Boolean = false;
+        private var allowOverlapChanged:Boolean = false;
         private var rangeValueChanged:Boolean = false;
         
         public function Ranges()
@@ -135,6 +139,21 @@ package com.patrickmowrer.components.supportClasses
                 invalidateProperties();
             }
         }
+        
+        public function get allowOverlap():Boolean
+        {
+            return _allowOverlap;
+        }
+        
+        public function set allowOverlap(value:Boolean):void
+        {
+            if(value != _allowOverlap)
+            {
+                _allowOverlap = value;
+                allowOverlapChanged = true;
+                invalidateProperties();
+            }
+        }
                 
         override protected function createChildren():void
         {
@@ -149,8 +168,10 @@ package com.patrickmowrer.components.supportClasses
             
             if(partName == "range")
             {
-                (instance as Range).addEventListener(FlexEvent.CREATION_COMPLETE, 
-                    rangeCreationCompleteHandler);
+                var range:Range = Range(instance);
+                
+                range.addEventListener(FlexEvent.CREATION_COMPLETE, rangeCreationCompleteHandler);
+                range.addEventListener(MouseEvent.MOUSE_DOWN, rangeMouseDownHandler);
             }
         }
         
@@ -166,9 +187,44 @@ package com.patrickmowrer.components.supportClasses
         
         private function rangeValueCommitHandler(event:FlexEvent):void
         {
+/*            if(!allowOverlap)
+            {
+                var instance:Range = Range(event.currentTarget);
+                var index:int = getIndexOf(instance);
+                
+                if(index != 0)
+                {
+                    getRangeInstanceAt(index - 1).maximum = instance.value;
+                }
+                
+                if(index != numberOfRangeInstances - 1)
+                {
+                    getRangeInstanceAt(index + 1).minimum = instance.value;
+                }
+            }*/
+            
             invalidateProperties();
             
             rangeValueChanged = true;
+        }
+        
+        private function rangeMouseDownHandler(event:MouseEvent):void
+        {
+            visuallyMoveToFront(event.currentTarget as IVisualElement);
+        }
+        
+        private function visuallyMoveToFront(instance:IVisualElement):void
+        {
+            setAllElementsToSameDepth(0);
+            instance.depth = 1;
+        }
+        
+        private function setAllElementsToSameDepth(value:Number):void
+        {
+            for(var index:int = 0; index < numElements; index++)
+            {
+                getElementAt(index).depth = value;
+            }
         }
         
         override protected function partRemoved(partName:String, instance:Object):void
@@ -177,7 +233,10 @@ package com.patrickmowrer.components.supportClasses
             
             if(partName == "range")
             {
-                (instance as Range).removeEventListener(FlexEvent.VALUE_COMMIT, rangeValueCommitHandler);
+                var range:Range = Range(instance);
+                
+                range.removeEventListener(FlexEvent.CREATION_COMPLETE, rangeCreationCompleteHandler);
+                range.removeEventListener(MouseEvent.MOUSE_DOWN, rangeMouseDownHandler);
             }
         }
         
@@ -193,7 +252,8 @@ package com.patrickmowrer.components.supportClasses
                     _maximum = _minimum;
             }
 
-            if(valuesChanged || minimumChanged || maximumChanged || snapIntervalChanged)
+            if(valuesChanged || minimumChanged || maximumChanged 
+                || snapIntervalChanged || allowOverlapChanged)
             {
                 if(!newValues)
                 {
@@ -204,10 +264,11 @@ package com.patrickmowrer.components.supportClasses
                 createRanges(newValues);
                 
                 newValues = null;                
-                valuesChanged = false;
                 minimumChanged = false;
                 maximumChanged = false;
                 snapIntervalChanged = false;
+                valuesChanged = false;
+                allowOverlapChanged = false;
                 
                 dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
             }
@@ -216,6 +277,11 @@ package com.patrickmowrer.components.supportClasses
             {
                 dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
             }
+        }
+        
+        protected function getIndexOf(instance:Range):int
+        {
+            return rangeInstances.indexOf(instance);
         }
         
         protected function getRangeInstanceAt(index:uint):Range
@@ -228,26 +294,47 @@ package com.patrickmowrer.components.supportClasses
             return rangeInstances.length;
         }
         
+        protected function nearestInstanceTo(value:Number):Range
+        {           
+            var nearestValue:Number = maximum;
+            var nearestInstance:Range;
+            
+            for(var index:int = 0; index < numberOfRangeInstances; index++)
+            {
+                var instance:Range = getRangeInstanceAt(index);
+                var valueDelta:Number = Math.abs(instance.value - value);
+                
+                if(valueDelta < nearestValue)
+                {
+                    nearestValue = valueDelta;
+                    nearestInstance = instance;
+                }
+            } 
+            
+            return nearestInstance;
+        }
+        
         private function createRanges(values:Array):void
         {
-            var rangeInstance:Range;
+            var instance:Range;
+            var lastIndex:int = values.length - 1;
             
-            for(var index:int = 0; index < values.length; index++)
+            for(var index:int = 0; index <= lastIndex; index++)
             {
-                rangeInstance = createDynamicPartInstance("range") as Range;
+                instance = createDynamicPartInstance("range") as Range;
                 
-                initializeRange(rangeInstance, values[index]);
+                initializeRange(instance, values[index]);
                 
-                addElement(rangeInstance);
-                rangeInstances.push(rangeInstance);
+                addElement(instance);
+                rangeInstances.push(instance);
             }
         }
         
         private function initializeRange(instance:Range, value:Number):void
         {
             instance.value = value;
-            instance.minimum = _minimum;
-            instance.maximum = _maximum;
+            instance.minimum = minimum;
+            instance.maximum = maximum;
             instance.snapInterval = _snapInterval;
         }
         

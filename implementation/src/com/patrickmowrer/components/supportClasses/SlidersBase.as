@@ -20,33 +20,15 @@ package com.patrickmowrer.components.supportClasses
         [SkinPart(required="false")]
         public var track:SliderBase;
         
-        private var _allowThumbOverlap:Boolean = false;
-        
         private var minimumChanged:Boolean = false;
         private var maximumChanged:Boolean = false;
         private var snapIntervalChanged:Boolean = false;
-        private var allowThumbOverlapChanged:Boolean = false;
         
         private var currentTrackThumb:Range;
         
         public function SlidersBase()
         {
             super();
-        }
-        
-        public function get allowThumbOverlap():Boolean
-        {
-            return _allowThumbOverlap;
-        }
-        
-        public function set allowThumbOverlap(value:Boolean):void
-        {
-            if(_allowThumbOverlap != value)
-            {
-                _allowThumbOverlap = value;
-                allowThumbOverlapChanged = true;
-                invalidateProperties();
-            }
         }
         
         override public function set minimum(value:Number):void
@@ -94,38 +76,7 @@ package com.patrickmowrer.components.supportClasses
                 
                 minimumChanged = false;
                 maximumChanged = false;
-            }
-            
-            if(allowThumbOverlapChanged)
-            {
-                var thumb:Range;
-                var firstIndex:int = 0;
-                var lastIndex:int = numberOfRangeInstances - 1;
-                
-                for(var index:int = 0; index <= lastIndex; index++)
-                {
-                    thumb = getRangeInstanceAt(index);
-                    
-                    if(allowThumbOverlap)
-                    {
-                        if(index != firstIndex)
-                        {
-                            thumb.minimum = values[index];
-                        }
-                        
-                        if(index != lastIndex)
-                        {
-                            thumb.maximum = values[index + 1];
-                        }
-                    }
-                    else
-                    {
-                        thumb.minimum = minimum;
-                        thumb.maximum = maximum;
-                    }
-                }
-                
-                allowThumbOverlapChanged = false;
+                snapIntervalChanged = false;
             }
         }
         
@@ -138,14 +89,14 @@ package com.patrickmowrer.components.supportClasses
                 var thumb:SliderBase = instance as SliderBase;
                 
                 thumb.track = track.track;
-                thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                track.addEventListener(Event.CHANGE, trackChangeHandler);
+                
             }
             else if(partName == "track" && instance is SliderBase)
             {
                 var track:SliderBase = track as SliderBase;
                 
                 track.addEventListener(MouseEvent.MOUSE_DOWN, trackMouseDownHandler, true);
+                track.addEventListener(Event.CHANGE, trackChangeHandler);
                 track.setStyle("slideDuration", getStyle("slideDuration"));
             }
         }
@@ -159,13 +110,13 @@ package com.patrickmowrer.components.supportClasses
                 var thumb:SliderBase = instance as SliderBase;
                 
                 thumb.track = null;
-                thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler); 
             }
             else if(partName == "track" && instance is SliderBase)
             {
                 var track:SliderBase = track as SliderBase;
                 
                 track.removeEventListener(MouseEvent.MOUSE_DOWN, trackMouseDownHandler, true);             
+                track.removeEventListener(Event.CHANGE, trackChangeHandler);
             }
         }
         
@@ -173,7 +124,7 @@ package com.patrickmowrer.components.supportClasses
         {
             var trackRelative:Point = track.globalToLocal(new Point(event.stageX, event.stageY));
             var trackPointValue:Number = trackPointToValue(trackRelative.x, trackRelative.y);
-            var thumb:SliderBase = nearestThumbInstanceTo(trackPointValue);
+            var thumb:SliderBase = SliderBase(nearestInstanceTo(trackPointValue));
             
             currentTrackThumb = thumb;
             
@@ -197,45 +148,6 @@ package com.patrickmowrer.components.supportClasses
         protected function trackPointToValue(x:Number, y:Number):Number
         {
             throw new IllegalOperationError("This method must be overriden in sub-classes.");
-        }
-        
-        private function nearestThumbInstanceTo(value:Number):SliderBase
-        {           
-            var nearestValue:Number = maximum;
-            var nearestThumb:SliderBase;
-            
-            for(var index:int = 0; index < numberOfRangeInstances; index++)
-            {
-                var thumbInstance:SliderBase = SliderBase(getRangeInstanceAt(index));
-                var thumbValueDelta:Number = Math.abs(thumbInstance.value - value);
-                
-                if(thumbValueDelta < nearestValue)
-                {
-                    nearestValue = thumbValueDelta;
-                    nearestThumb = thumbInstance;
-                }
-            } 
-
-            return nearestThumb;
-        }
-        
-        private function thumbMouseDownHandler(event:MouseEvent):void
-        {
-            visuallyMoveToFront(event.currentTarget as IVisualElement);
-        }
-        
-        private function visuallyMoveToFront(instance:IVisualElement):void
-        {
-            setAllElementsToSameDepth(0);
-            instance.depth = 1;
-        }
-        
-        private function setAllElementsToSameDepth(value:Number):void
-        {
-            for(var index:int = 0; index < numElements; index++)
-            {
-                getElementAt(index).depth = value;
-            }
         }
     }
 }
