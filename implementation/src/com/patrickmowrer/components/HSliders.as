@@ -14,7 +14,7 @@ package com.patrickmowrer.components
         
         override protected function trackPointToValue(x:Number, y:Number):Number
         {
-            var thumbDummy:Range = Range(range.newInstance());
+            var thumbDummy:SliderBase = SliderBase(thumb.newInstance());
             var trackRange:Number = maximum - minimum;
             var thumbRange:Number = track.getLayoutBoundsWidth() - thumbDummy.getLayoutBoundsWidth();
             

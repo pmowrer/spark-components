@@ -3,7 +3,6 @@
   <includeClasses>
     <classEntry path="com.patrickmowrer.components.HSliders"/>
     <classEntry path="com.patrickmowrer.components.VSliders"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.Ranges"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.SlidersBase"/>
     <classEntry path="com.patrickmowrer.skins.HSlidersSkin"/>
     <classEntry path="com.patrickmowrer.skins.ThumblessHSliderSkin"/>

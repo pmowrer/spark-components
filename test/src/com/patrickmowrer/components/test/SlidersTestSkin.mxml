@@ -10,8 +10,8 @@
     </fx:Metadata>
     
     <fx:Declarations>
-        <fx:Component id="range">
-            <s:HSlider name="thumb" skinClass="spark.skins.spark.HSliderSkin"/>
+        <fx:Component id="thumb">
+            <s:HSlider skinClass="spark.skins.spark.HSliderSkin"/>
         </fx:Component>
     </fx:Declarations>
     
