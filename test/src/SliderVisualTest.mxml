@@ -4,8 +4,13 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:ns="library://ns.patrickmowrer.com"
                xmlns:local="*"
-               minWidth="955" minHeight="600"
+               minWidth="955" minHeight="600" xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*"
 >    
+    <fx:Script>
+        <![CDATA[
+            import mx.skins.spark.SliderThumbSkin;
+        ]]>
+    </fx:Script>
     <fx:Declarations>
         <!-- Place non-visual elements (e.g., services, value objects) here -->
     </fx:Declarations>
@@ -26,6 +31,11 @@
         <local:slider>
             <ns:HSliders width="500" minimum="50" maximum="100" values="{[53, 67, 80]}" slideDuration="1000" />        
         </local:slider>
-    </local:MultivalueSliderModifiers>  
+    </local:MultivalueSliderModifiers> 
+    
+    <s:SkinnableContainer x="100" y="500" width="100" skinClass="ValueGroupTest">
+        <supportClasses:Thumb value="3" skinClass="mx.skins.spark.SliderThumbSkin"/>
+        <supportClasses:Thumb value="66" skinClass="mx.skins.spark.SliderThumbSkin"/>
+    </s:SkinnableContainer>
                    
 </s:Application>

@@ -10,6 +10,11 @@
     <classEntry path="com.patrickmowrer.skins.TracklessHSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.TracklessVSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.VSlidersSkin"/>
+    <classEntry path="com.patrickmowrer.layouts.HorizontalValueLayout"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.Value"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.ValueBounding"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.Thumb"/>
+    <classEntry path="com.patrickmowrer.layouts.supportClasses.ValueBasedLayout"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
