@@ -15,6 +15,7 @@
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueBounding"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.Thumb"/>
     <classEntry path="com.patrickmowrer.layouts.supportClasses.ValueBasedLayout"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.SliderBase2"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
