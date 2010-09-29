@@ -28,6 +28,8 @@ package com.patrickmowrer.components.supportClasses
         
         public function Thumb()
         {
+            super();
+            
             addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true);
         }
         

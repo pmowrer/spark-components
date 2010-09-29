@@ -10,7 +10,7 @@ package com.patrickmowrer.layouts
     
     import spark.layouts.supportClasses.LayoutBase;
     
-    public class HorizontalValueLayout extends LayoutBase implements ValueBounding, ValueBasedLayout
+    public class HorizontalValueLayout extends LayoutBase implements ValueBasedLayout
     {
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;

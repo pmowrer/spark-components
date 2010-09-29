@@ -1,6 +1,8 @@
 package com.patrickmowrer.layouts.supportClasses
 {
-    public interface ValueBasedLayout
+    import com.patrickmowrer.components.supportClasses.ValueBounding;
+
+    public interface ValueBasedLayout extends ValueBounding
     {
         function pointToValue(x:Number, y:Number):Number;
     }
