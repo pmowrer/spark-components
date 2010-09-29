@@ -1,5 +1,13 @@
 package com.patrickmowrer.components.supportClasses
 {
+    import com.patrickmowrer.events.ThumbEvent;
+    
+    import flash.display.DisplayObject;
+    import flash.events.MouseEvent;
+    import flash.geom.Point;
+    
+    import mx.events.SandboxMouseEvent;
+    
     import spark.components.Button;
     
     public class Thumb extends Button implements Value, ValueBounding
@@ -16,9 +24,11 @@ package com.patrickmowrer.components.supportClasses
         private var maximumChanged:Boolean = false;
         private var valueChanged:Boolean = false;
         
+        private var clickOffset:Point;
+        
         public function Thumb()
         {
-            super();
+            addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true);
         }
         
         public function get minimum():Number
@@ -85,6 +95,40 @@ package com.patrickmowrer.components.supportClasses
                 
                 valueChanged = false;
             }
+        }
+        
+        private function mouseDownHandler(event:MouseEvent):void
+        {
+            var sandboxRoot:DisplayObject = systemManager.getSandboxRoot();
+            
+            sandboxRoot.addEventListener(MouseEvent.MOUSE_MOVE, systemMouseMoveHandler, true);
+            sandboxRoot.addEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
+            sandboxRoot.addEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler);  
+            
+            clickOffset = globalToLocal(new Point(event.stageX, event.stageY));
+        }
+        
+        private function systemMouseMoveHandler(event:MouseEvent):void
+        {
+            var mouseMovedTo:Point = 
+                new Point(event.stageX - clickOffset.x, event.stageY - clickOffset.y);
+            
+            var thumbEvent:ThumbEvent = new ThumbEvent(ThumbEvent.DRAG);
+            thumbEvent.stageX = mouseMovedTo.x;
+            thumbEvent.stageY = mouseMovedTo.y;
+            
+            dispatchEvent(thumbEvent);
+        }
+        
+        private function systemMouseUpHandler(event:MouseEvent):void
+        {
+            var sandboxRoot:DisplayObject = systemManager.getSandboxRoot();
+            
+            sandboxRoot.removeEventListener(MouseEvent.MOUSE_MOVE, systemMouseMoveHandler, true);
+            sandboxRoot.removeEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
+            sandboxRoot.removeEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler); 
+            
+            clickOffset = null;
         }
     }
 }

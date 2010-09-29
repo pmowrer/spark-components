@@ -1,19 +1,31 @@
 package com.patrickmowrer.components.supportClasses
 {
+    import com.patrickmowrer.events.ThumbEvent;
+    import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
+    
+    import flash.display.DisplayObject;
+    import flash.events.MouseEvent;
+    import flash.geom.Point;
     import flash.utils.getQualifiedClassName;
     
     import mx.core.IFactory;
+    import mx.events.SandboxMouseEvent;
     
+    import spark.components.Button;
     import spark.components.SkinnableContainer;
     
     public class SliderBase2 extends SkinnableContainer
     {
         [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.Thumb")]
         public var thumb:IFactory;
+        
+        [SkinPart(required="false")]
+        public var track:Button;
 
         private const DEFAULT_VALUES:Array = [0, 100];
 
         private var thumbs:Vector.<Thumb>;
+        private var thumbClickPoint:Point;
         
         private var _values:Array = DEFAULT_VALUES;
 
@@ -47,6 +59,9 @@ package com.patrickmowrer.components.supportClasses
             
             if(partName == "thumb")
             {
+                var thumb:Thumb = Thumb(instance);
+                
+                thumb.addEventListener(ThumbEvent.DRAG, thumbDragHandler);
             }
         }
         
@@ -56,6 +71,24 @@ package com.patrickmowrer.components.supportClasses
             
             if(partName == "thumb")
             {
+                var thumb:Thumb = Thumb(instance);
+                
+                thumb.removeEventListener(ThumbEvent.DRAG, thumbDragHandler);
+            }
+        }
+        
+        private function thumbDragHandler(event:ThumbEvent):void
+        {
+            var thumb:Thumb = Thumb(event.currentTarget);
+            
+            if(valueBasedLayout)
+            {
+                var draggedTo:Point 
+                    = contentGroup.globalToLocal(new Point(event.stageX, event.stageY));
+                    
+                thumb.value = valueBasedLayout.pointToValue(draggedTo.x, draggedTo.y);
+                
+                contentGroup.invalidateDisplayList();
             }
         }
         
@@ -115,6 +148,11 @@ package com.patrickmowrer.components.supportClasses
             }
             
             thumbs.splice(0, thumbs.length);
+        }
+        
+        private function get valueBasedLayout():ValueBasedLayout
+        {
+            return (layout as ValueBasedLayout);
         }
     }
 }

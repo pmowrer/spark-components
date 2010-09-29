@@ -16,6 +16,9 @@
     <classEntry path="com.patrickmowrer.components.supportClasses.Thumb"/>
     <classEntry path="com.patrickmowrer.layouts.supportClasses.ValueBasedLayout"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.SliderBase2"/>
+    <classEntry path="com.patrickmowrer.components.HSlider"/>
+    <classEntry path="com.patrickmowrer.skins.HSliderSkin"/>
+    <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

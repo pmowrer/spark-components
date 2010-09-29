@@ -4,7 +4,7 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:ns="library://ns.patrickmowrer.com"
                xmlns:local="*"
-               minWidth="955" minHeight="600" xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*"
+               minWidth="955" minHeight="600" xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*" xmlns:skins="com.patrickmowrer.skins.*"
 >    
     <fx:Script>
         <![CDATA[
@@ -33,9 +33,6 @@
         </local:slider>
     </local:MultivalueSliderModifiers> 
     
-    <s:SkinnableContainer x="100" y="500" width="100" skinClass="ValueGroupTest">
-        <supportClasses:Thumb value="3" skinClass="mx.skins.spark.SliderThumbSkin"/>
-        <supportClasses:Thumb value="66" skinClass="mx.skins.spark.SliderThumbSkin"/>
-    </s:SkinnableContainer>
+    <ns:HSlider x="100" y="500" width="200" />
                    
 </s:Application>
