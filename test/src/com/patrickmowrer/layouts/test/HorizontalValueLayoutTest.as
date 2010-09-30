@@ -1,11 +1,20 @@
 package com.patrickmowrer.layouts.test
 {
     import com.patrickmowrer.layouts.HorizontalValueLayout;
+    import com.patrickmowrer.utils.afterSequence;
+    
+    import flash.events.Event;
+    
+    import flexunit.framework.Test;
     
     import mx.events.FlexEvent;
     
     import org.flexunit.assertThat;
     import org.flexunit.rules.IMethodRule;
+    import org.fluint.sequence.SequenceCaller;
+    import org.fluint.sequence.SequenceRunner;
+    import org.fluint.sequence.SequenceSetter;
+    import org.fluint.sequence.SequenceWaiter;
     import org.fluint.uiImpersonation.UIImpersonator;
     import org.hamcrest.object.equalTo;
     import org.hamcrest.object.hasProperty;
@@ -15,6 +24,8 @@ package com.patrickmowrer.layouts.test
 
     public class HorizontalValueLayoutTest
     {		
+        private const WIDTH:Number = 160;
+        
         private var layout:HorizontalValueLayout;
         private var group:Group;
         
@@ -25,11 +36,12 @@ package com.patrickmowrer.layouts.test
         public function setUp():void
         {
             layout = new HorizontalValueLayout();
-            layout.minimum = 0;
+            layout.minimum = 20;
             layout.maximum = 100;
             
             group = new Group();
             group.layout = layout;
+            group.width = WIDTH;
             
             UIImpersonator.addChild(group);
             after(FlexEvent.UPDATE_COMPLETE).on(group).pass();
@@ -46,20 +58,18 @@ package com.patrickmowrer.layouts.test
         [Test]
         public function positionsElementsHorizontallyBasedOnValueProperty():void
         {
-            var value1:VisualElementWithValue = new VisualElementWithValue(5);
-            var value2:VisualElementWithValue = new VisualElementWithValue(43);
+            var value1:VisualElementWithValue = new VisualElementWithValue(40);
+            var value2:VisualElementWithValue = new VisualElementWithValue(44);
             var value3:VisualElementWithValue = new VisualElementWithValue(68);
-            
-            group.width = 150;
             
             group.addElement(value1);
             group.addElement(value2);
             group.addElement(value3);
                         
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value1, "x").equals(7.5).and()
-                .assert(value2, "x").equals(64.5).and()
-                .assert(value3, "x").equals(102);
+                .assert(value1, "x").equals(40).and()
+                .assert(value2, "x").equals(48).and()
+                .assert(value3, "x").equals(96);
         }
         
         [Test]
@@ -77,10 +87,8 @@ package com.patrickmowrer.layouts.test
         
         [Test(async)]
         public function translatesXCoordinateToValueBasedOnTargetWidthAndMinMax():void
-        {
-            group.width = 150;
-            
-            assertThat(layout.pointToValue(48, 0), equalTo(32));
+        {            
+            assertThat(layout.pointToValue(48, 0), equalTo(44));
         }
         
         [Test]
@@ -88,11 +96,10 @@ package com.patrickmowrer.layouts.test
         {
             var value1:VisualElementWithValue = new VisualElementWithValue(153);
             
-            group.width = 150;
             group.addElement(value1);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value1, "x").equals(150);
+                .assert(value1, "x").equals(WIDTH);
         }
         
         [Test]

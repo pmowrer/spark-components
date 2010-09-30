@@ -19,6 +19,7 @@
     <classEntry path="com.patrickmowrer.components.HSlider"/>
     <classEntry path="com.patrickmowrer.skins.HSliderSkin"/>
     <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.ValueSnapInterval"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

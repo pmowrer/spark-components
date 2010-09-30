@@ -6,6 +6,7 @@ package com.patrickmowrer.components.supportClasses
     import flash.events.MouseEvent;
     import flash.geom.Point;
     
+    import mx.events.FlexEvent;
     import mx.events.SandboxMouseEvent;
     
     import spark.components.Button;
@@ -84,6 +85,9 @@ package com.patrickmowrer.components.supportClasses
             
             if(minimumChanged || maximumChanged) 
             {
+                if(minimum > maximum)
+                    minimum = maximum;
+                
                 if(minimum > value || maximum < value)
                     valueChanged = true;
                 
@@ -94,6 +98,8 @@ package com.patrickmowrer.components.supportClasses
             if(valueChanged)
             {
                 _value = Math.min(Math.max(_value, _minimum), _maximum);
+                
+                dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
                 
                 valueChanged = false;
             }

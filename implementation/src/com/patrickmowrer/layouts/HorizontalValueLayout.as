@@ -58,7 +58,7 @@ package com.patrickmowrer.layouts
             if(!target)
                 return 0;
             
-            return (x / target.getLayoutBoundsWidth()) * minMaxDelta;
+            return (x / target.getLayoutBoundsWidth()) * minMaxDelta + minimum;
         }
         
         override public function updateDisplayList(width:Number, height:Number):void
@@ -73,7 +73,7 @@ package com.patrickmowrer.layouts
                 
                 if(element is Value)
                 {
-                    var x:Number = width * toFractionOfValueDelta(Value(element).value);
+                    var x:Number = width * fractionOfRange(Value(element).value);
                     
                     element.setLayoutBoundsSize(NaN, NaN);
                     element.setLayoutBoundsPosition(x, 0);
@@ -86,7 +86,7 @@ package com.patrickmowrer.layouts
             super.measure();
         }
         
-        private function toFractionOfValueDelta(value:Number):Number
+        private function fractionOfRange(value:Number):Number
         {
             if(value > maximum)
             {
@@ -98,7 +98,7 @@ package com.patrickmowrer.layouts
             }
             else
             {
-                return Math.abs(value) / minMaxDelta;
+                return Math.abs(value - minimum) / minMaxDelta;
             }
         }
         

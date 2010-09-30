@@ -17,7 +17,7 @@
     
     <local:MultivalueSliderModifiers x="100" y="50">
         <local:slider>
-            <mx:HSlider thumbCount="2" showTrackHighlight="true" />            
+            <mx:HSlider thumbCount="2" values="{[7.5, 2.5]}" showTrackHighlight="true" />            
         </local:slider>
     </local:MultivalueSliderModifiers>      
     
@@ -32,7 +32,11 @@
             <ns:HSliders width="500" minimum="50" maximum="100" values="{[53, 67, 80]}" slideDuration="1000" />        
         </local:slider>
     </local:MultivalueSliderModifiers> 
-    
-    <ns:HSlider x="100" y="500" width="200" />
+
+    <local:MultivalueSliderModifiers x="100" y="500" width="500">
+        <local:slider>        
+            <ns:HSlider width="200" values="{[50, 100, 20]}" />
+        </local:slider>
+    </local:MultivalueSliderModifiers> 
                    
 </s:Application>

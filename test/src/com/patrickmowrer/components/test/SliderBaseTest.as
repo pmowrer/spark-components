@@ -2,14 +2,21 @@ package com.patrickmowrer.components.test
 {
     import com.patrickmowrer.components.supportClasses.SliderBase2;
     import com.patrickmowrer.components.supportClasses.Thumb;
+    import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
+    
+    import flash.events.Event;
     
     import mx.events.FlexEvent;
     
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
     import org.hamcrest.assertThat;
+    import org.hamcrest.collection.array;
     import org.hamcrest.object.equalTo;
+    import org.hamcrest.object.hasProperties;
     import org.morefluent.integrations.flexunit4.*;
+    
+    import spark.layouts.supportClasses.LayoutBase;
 
     public class SliderBaseTest
     {
@@ -18,11 +25,17 @@ package com.patrickmowrer.components.test
         
         private var slider:SliderBase2;
         
+        private var testValues:Array = [-5, 23, 47, 68, 89];
+        
         [Before(async, ui)]
         public function setUp():void
         {
             slider = new SliderBase2();
             slider.thumb = new ThumbFactory();
+            slider.layout = new ValueBasedLayoutDummy();
+            slider.minimum = -10;
+            slider.maximum = 90;
+            slider.values = testValues;
             
             UIImpersonator.addChild(slider);
             
@@ -37,33 +50,151 @@ package com.patrickmowrer.components.test
         }
         
         [Test(async)]
+        public function setPropertiesCanBeRetrievedImmediately():void
+        {
+            slider.values = [99, 999, 9999];
+            slider.minimum = 99;
+            slider.maximum = 9999;
+            slider.allowOverlap = true;
+            
+            assertThat(slider, hasProperties(
+                {
+                    "values": array(99, 999, 9999),
+                    "minimum": 99,
+                    "maximum": 9999,
+                    "allowOverlap": true
+                }));
+        }
+        
+        [Test(async)]
         public function createsAThumbForEveryValueInValuesProperty():void
         {
-            slider.values = [10, 20, 30];
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(slider).call(verifyThumbs, slider, slider.values);
-            
-            function verifyThumbs(slider:SliderBase2, values:Array):void
+            for(var index:int = 0; index < slider.numElements; index++)
             {
-                for(var index:int = 0; index < slider.numElements; index++)
-                {
-                    var thumb:Thumb = Thumb(slider.getElementAt(index));
-                    
-                    assertThat(thumb.value, equalTo(values[index]));
-                }
-            }           
+                var thumb:Thumb = Thumb(slider.getElementAt(index));
+                
+                assertThat(thumb.value, equalTo(testValues[index]));
+            }
+        }
+        
+        [Test(async)]
+        public function dispatchesValueCommitEventOnceWhenValuesChange():void
+        {
+            observing(FlexEvent.VALUE_COMMIT).on(slider);
+            
+            slider.values = [1, 2, 3];
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .assert(slider).observed(FlexEvent.VALUE_COMMIT, times(1));
+        }
+        
+        [Test(async)]
+        public function dispatchesChangeEventOnceWhenValuesChange():void
+        {
+            slider.values = [1, 2, 3];
+            
+            after(Event.CHANGE).on(slider).pass();
+        }
+        
+        [Test(async)]
+        public function dispatchesChangeEventOnceWhenAThumbValueChanges():void
+        {
+            var thumb:Thumb = Thumb(slider.getElementAt(0));
+            thumb.value = 55;
+            
+            after(Event.CHANGE).on(slider).pass();
+        }
+        
+        [Test(async)]
+        public function valuesOutsideOfMinMaxRangeAreAdjustedToNearestValidValue():void
+        {   
+            slider.values = [-20, 50, 115];
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .assert(slider, "values").equals([-10, 50, 90]);
+        }
+        
+        [Test(async)]
+        public function minChangeAdjustsAnyOutOfRangeValuesToNearestValidValue():void
+        {
+            slider.minimum = 50;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .assert(slider, "values").equals([50, 50, 50, 68, 89]);
+        }
+        
+        [Test(async)]
+        public function maxChangeAdjustsAnyOutOfRangeValuesToNearestValidValue():void
+        {
+            slider.maximum = -1;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .assert(slider, "values").equals([-5, -1, -1, -1, -1]);
+        }
+        
+        [Test(async)]
+        public function overlappingValuesAreSortedWhenOverlapIsntAllowed():void
+        {
+            slider.allowOverlap = false;
+            slider.values = [5, 10, 2];
+            
+            after(Event.CHANGE).on(slider)
+                .assert(slider, "values").equals([2, 5, 10]);
+        }
+        
+        [Test]
+        public function canAllowOverlappingValues():void
+        {
+            slider.allowOverlap = true;
+            slider.values = [5, 10, 2];
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider).assert(slider, "values").equals([5, 10, 2]);
         }
     }
 }
 
 import com.patrickmowrer.components.supportClasses.Thumb;
+import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
 
 import mx.core.IFactory;
+
+import spark.layouts.supportClasses.LayoutBase;
 
 internal class ThumbFactory implements IFactory
 {
     public function newInstance():*
     {
         return new Thumb();
+    }
+}
+
+internal class ValueBasedLayoutDummy extends LayoutBase implements ValueBasedLayout
+{
+    private var _min:Number;
+    private var _max:Number;
+    
+    public function get minimum():Number
+    {
+        return _min;
+    }
+    
+    public function set minimum(value:Number):void
+    {
+        _min = value;
+    }
+    
+    public function get maximum():Number
+    {
+        return _max;
+    }
+    
+    public function set maximum(value:Number):void
+    {
+        _max = value;
+    }
+    
+    public function pointToValue(x:Number, y:Number):Number
+    {
+        return 0;
     }
 }

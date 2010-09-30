@@ -60,6 +60,17 @@ package com.patrickmowrer.components.test
         }
         
         [Test(async)]
+        public function newValueTriggersValueCommit():void
+        {
+            observing(FlexEvent.VALUE_COMMIT).on(thumb);
+            
+            thumb.value = ARBITRARY_VALUE_BETWEEN_DEF_MINMAX;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(thumb).
+                assert(thumb).observed(FlexEvent.VALUE_COMMIT, times(1));          
+        }
+        
+        [Test(async)]
         public function defaultMinimumIs0():void
         {
             assertThat(thumb.minimum, equalTo(DEFAULT_MIN));
@@ -126,6 +137,16 @@ package com.patrickmowrer.components.test
             
             after(FlexEvent.UPDATE_COMPLETE).on(thumb)
                 .assert(thumb, "value").equals(ARBITRARY_VALUE_LESS_THAN_DEF_VALUE);
+        }
+        
+        [Test(async)]
+        public function settingMinimumHigherThanMaximumAdjustsFormerToLatter():void
+        {
+            thumb.minimum = ARBITRARY_VALUE_GREATER_THAN_DEF_VALUE;
+            thumb.maximum = ARBITRARY_VALUE_LESS_THAN_DEF_VALUE;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(thumb)
+                .assert(thumb, "minimum").equals(ARBITRARY_VALUE_LESS_THAN_DEF_VALUE);
         }
     }
 }

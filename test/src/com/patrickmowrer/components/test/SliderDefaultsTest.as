@@ -1,71 +1,71 @@
 package com.patrickmowrer.components.test
 {
-    import com.patrickmowrer.components.supportClasses.SlidersBase;
+    import com.patrickmowrer.components.supportClasses.SliderBase2;
     
     import flash.events.Event;
     
     import mx.events.FlexEvent;
     
-    import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
+    import org.flexunit.rules.IMethodRule;
+    import org.morefluent.integrations.flexunit4.*;
+    
     import org.hamcrest.assertThat;
     import org.hamcrest.collection.array;
     import org.hamcrest.object.equalTo;
     import org.hamcrest.object.isFalse;
-    import org.morefluent.integrations.flexunit4.*;
 
-    public class SlidersDefaultsTest
+    public class SliderDefaultsTest
     {		
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule(); 
         
-        private var sliders:SlidersBase;
+        private var slider:SliderBase2;
         
         [Before(async, ui)]
         public function setUp():void
         {
-            sliders = new SlidersBase();
-            sliders.setStyle("skinClass", SlidersTestSkin);
+            slider = new SliderBase2();
             
-            UIImpersonator.addChild(sliders);
-            after(FlexEvent.UPDATE_COMPLETE).on(sliders).pass();
+            UIImpersonator.addChild(slider);
+            after(FlexEvent.UPDATE_COMPLETE).on(slider).pass();
         }
         
         [After(async, ui)]
         public function tearDown():void
         {
-            UIImpersonator.removeChild(sliders);			
-            sliders = null;
+            UIImpersonator.removeChild(slider);			
+            slider = null;
         }
         
         [Test]
         public function defaultValuesAre0And100():void
         {
-            assertThat(sliders.values, array(0, 100));
+            assertThat(slider.values, array(0, 100));
         }
         
         [Test]
         public function defaultMinimumIs0():void
         {
-            assertThat(sliders.minimum, equalTo(0));
+            assertThat(slider.minimum, equalTo(0));
         }
         
         [Test]
         public function defaultMaximumIs100():void
         {
-            assertThat(sliders.maximum, equalTo(100));
+            assertThat(slider.maximum, equalTo(100));
         }
         
         [Test]
         public function defaultSnapIntervalIs1():void
         {
-            assertThat(sliders.snapInterval, equalTo(1));
+            assertThat(slider.snapInterval, equalTo(1));
         }
         
         [Test]
         public function defaultAllowOverlapIsFalse():void
         {
-            assertThat(sliders.allowOverlap, isFalse());
+            assertThat(slider.allowOverlap, isFalse());
         }
     }
 }

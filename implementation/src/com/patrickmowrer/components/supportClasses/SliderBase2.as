@@ -4,18 +4,21 @@ package com.patrickmowrer.components.supportClasses
     import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
     
     import flash.display.DisplayObject;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     import flash.ui.Mouse;
     import flash.utils.getQualifiedClassName;
     
     import mx.core.IFactory;
+    import mx.core.IVisualElement;
+    import mx.events.FlexEvent;
     import mx.events.SandboxMouseEvent;
     
     import spark.components.Button;
     import spark.components.SkinnableContainer;
     
-    public class SliderBase2 extends SkinnableContainer
+    public class SliderBase2 extends SkinnableContainer implements ValueBounding, ValueSnapInterval
     {
         [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.Thumb")]
         public var thumb:IFactory;
@@ -23,35 +26,144 @@ package com.patrickmowrer.components.supportClasses
         [SkinPart(required="false")]
         public var track:Button;
 
+        private const DEFAULT_MINIMUM:Number = 0;
+        private const DEFAULT_MAXIMUM:Number = 100;
+        private const DEFAULT_SNAP_INTERVAL:Number = 1;
         private const DEFAULT_VALUES:Array = [0, 100];
-
-        private var thumbs:Vector.<Thumb>;
-        private var thumbClickPoint:Point;
+        private const DEFAULT_ALLOW_OVERLAP:Boolean = false;
         
-        private var _values:Array = DEFAULT_VALUES;
+        private var newMinimum:Number;
+        private var newMaximum:Number;
+        private var _snapInterval:Number = DEFAULT_SNAP_INTERVAL;
+        private var newValues:Array;
+        private var _allowOverlap:Boolean = DEFAULT_ALLOW_OVERLAP;
 
+        private var minimumChanged:Boolean = false;
+        private var maximumChanged:Boolean = false;
         private var valuesChanged:Boolean = false;
+        private var allowOverlapChanged:Boolean = false;
+        private var snapIntervalChanged:Boolean = false;
+        private var thumbValueChanged:Boolean = false;
+        
+        private var thumbs:Vector.<Thumb>;
         
         public function SliderBase2()
         {
             super();
             
             thumbs = new Vector.<Thumb>();
+            
+            if(!newMinimum)
+                minimum = DEFAULT_MINIMUM;
+            if(!newMaximum)
+                maximum = DEFAULT_MAXIMUM;
+            if(!newValues)
+                values = DEFAULT_VALUES;
         }
         
+        public function get minimum():Number
+        {
+            if(minimumChanged)
+                return newMinimum;
+            else if(valueBasedLayout)
+                 return valueBasedLayout.minimum;
+            else
+                return 0;
+        }
+        
+        public function set minimum(value:Number):void
+        {
+            if(value != minimum)
+            {
+                newMinimum = value;
+                minimumChanged = true;
+                invalidateProperties();
+            }
+        }
+
+        public function get maximum():Number
+        {
+            if(maximumChanged)
+                return newMaximum;
+            if(valueBasedLayout)
+                return valueBasedLayout.maximum;
+            else
+                return 0;
+        }
+        
+        public function set maximum(value:Number):void
+        {
+            if(value != maximum)
+            {
+                newMaximum = value;
+                maximumChanged = true;
+                invalidateProperties();
+            }
+        }
+        
+        public function get snapInterval():Number
+        {
+            return _snapInterval;
+        }
+        
+        public function set snapInterval(value:Number):void
+        {
+            if(value != _snapInterval)
+            {
+                _snapInterval = value;
+                snapIntervalChanged = true;
+                invalidateProperties();
+            }
+        }
+
+        [Bindable(event = "valueCommit")]
         public function get values():Array
         {
-            return _values;
+            if(valuesChanged)
+            {
+                return newValues;
+            }
+            else
+            {
+                var thumbValues:Array = [];
+                
+                if(thumb)
+                {
+                    for(var index:int = 0; index < numberOfThumbs; index++)
+                    {
+                        var value:Number = getThumbAt(index).value;
+                        
+                        thumbValues.push(value);
+                    }
+                }
+                
+                return thumbValues;
+            }
         }
         
         public function set values(value:Array):void
         {
-            if(value != _values)
+            if(value != values)
             {
-                _values = value;
+                newValues = value;
                 valuesChanged = true;
                 invalidateProperties();
             }  
+        }
+        
+        public function get allowOverlap():Boolean
+        {
+            return _allowOverlap;
+        }
+        
+        public function set allowOverlap(value:Boolean):void
+        {
+            if(value != _allowOverlap)
+            {
+                _allowOverlap = value;
+                allowOverlapChanged = true;
+                invalidateProperties();
+            }
         }
         
         override protected function partAdded(partName:String, instance:Object):void
@@ -62,7 +174,9 @@ package com.patrickmowrer.components.supportClasses
             {
                 var thumb:Thumb = Thumb(instance);
                 
+                thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
                 thumb.addEventListener(ThumbEvent.DRAG, thumbDragHandler);
+                thumb.addEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
             }
             else if(partName == "track")
             {
@@ -80,7 +194,9 @@ package com.patrickmowrer.components.supportClasses
             {
                 var thumb:Thumb = Thumb(instance);
                 
+                thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
                 thumb.removeEventListener(ThumbEvent.DRAG, thumbDragHandler);
+                thumb.removeEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
             }
             else if(partName == "track")
             {
@@ -94,49 +210,68 @@ package com.patrickmowrer.components.supportClasses
         {
             super.commitProperties();
             
-            if(valuesChanged)
+            if(valuesChanged || minimumChanged || maximumChanged || allowOverlapChanged)
             {
-                removeAllThumbs();
-                createThumbsFrom(values);
+                if(valueBasedLayout)
+                {
+                    if(minimumChanged)
+                        valueBasedLayout.minimum = newMinimum;
+                    if(maximumChanged)
+                        valueBasedLayout.maximum = newMaximum;
+                }
+
+                if(thumb)
+                {
+                    if(!valuesChanged)
+                        newValues = values;
+                    
+                    if(!allowOverlap)
+                        newValues = newValues.sort(Array.NUMERIC);
+                        
+                    removeAllThumbs();
+                    createThumbsFrom(newValues);
+                    
+                    dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
+                }
                 
+                minimumChanged = false;
+                maximumChanged = false;
                 valuesChanged = false;
+                allowOverlapChanged = false;
             }
-        }
-        
-        override protected function createChildren():void
-        {
-            super.createChildren();
             
-            if(thumb)
-                createThumbsFrom(_values);
+            if(thumbValueChanged)
+            {
+                dispatchEvent(new Event(Event.CHANGE));
+                
+                thumbValueChanged = false;
+            }
         }
         
         private function createThumbsFrom(values:Array):void
         {
-            var instance:Thumb;
+            var thumb:Thumb;
+            var indicies:int = values.length;
             
-            for(var index:int = 0; index < values.length; index++)
+            for(var index:int = 0; index < indicies; index++)
             {
-                instance = Thumb(createDynamicPartInstance("thumb"));
+                thumb = Thumb(createDynamicPartInstance("thumb"));
                 
-                if(!instance)
+                if(!thumb)
                 {
                     throw new ArgumentError("Thumb part must be of type " +
                         getQualifiedClassName(Thumb));
                 }
                 
-                initializeThumb(instance, values[index]);
+                thumb.value = values[index];
+                thumb.minimum = minimum;
+                thumb.maximum = maximum;
                 
-                addElement(instance);
-                thumbs.push(instance);
+                addElement(thumb);
+                thumbs.push(thumb);
             }
         }
-        
-        private function initializeThumb(thumb:Thumb, value:Number):void
-        {
-            thumb.value = value;
-        }
-        
+
         private function removeAllThumbs():void
         {
             for(var index:int = 0; index < thumbs.length; index++)
@@ -158,9 +293,33 @@ package com.patrickmowrer.components.supportClasses
             return thumbs.length;
         }
         
-        private function getThumbInstanceAt(index:int):Thumb
+        private function getThumbAt(index:int):Thumb
         {
             return thumbs[index];
+        }
+        
+        private function getIndexOf(thumb:Thumb):int
+        {
+            return thumbs.indexOf(thumb);
+        }
+        
+        private function thumbMouseDownHandler(event:MouseEvent):void
+        {
+            visuallyMoveToFront(event.currentTarget as IVisualElement);
+        }
+        
+        private function visuallyMoveToFront(instance:IVisualElement):void
+        {
+            setAllElementsToSameDepth(0);
+            instance.depth = 1;
+        }
+        
+        private function setAllElementsToSameDepth(value:Number):void
+        {
+            for(var index:int = 0; index < numElements; index++)
+            {
+                getElementAt(index).depth = value;
+            }
         }
         
         private function thumbDragHandler(event:ThumbEvent):void
@@ -178,6 +337,31 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
+        private function thumbValueCommitHandler(event:FlexEvent):void
+        {
+            if(!allowOverlap && numberOfThumbs > 1)
+            {
+                constrainThumb(Thumb(event.currentTarget));
+            }
+            
+            if(!thumbValueChanged)
+            {
+                thumbValueChanged = true;
+                invalidateProperties();
+            }
+        }
+        
+        private function constrainThumb(thumb:Thumb):void
+        {
+            var thumbIndex:int = getIndexOf(thumb);
+            
+            if(thumbIndex != 0)
+                getThumbAt(thumbIndex - 1).maximum = thumb.value;
+            
+            if(thumbIndex != numberOfThumbs - 1)
+                getThumbAt(thumbIndex + 1).minimum = thumb.value;           
+        }
+        
         private function trackMouseDownHandler(event:MouseEvent):void
         {
             if(valueBasedLayout)
@@ -193,20 +377,23 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        protected function nearestThumbTo(value:Number):Thumb
+        private function nearestThumbTo(value:Number):Thumb
         {           
             var nearestValue:Number = valueBasedLayout.maximum;
             var nearestThumb:Thumb;
             
             for(var index:int = 0; index < numberOfThumbs; index++)
             {
-                var instance:Thumb = getThumbInstanceAt(index);
-                var valueDelta:Number = Math.abs(instance.value - value);
+                var thumb:Thumb = getThumbAt(index);
+                var valueDelta:Number = Math.abs(thumb.value - value);
                 
-                if(valueDelta < nearestValue)
+                var valueInRange:Boolean 
+                    = allowOverlap || (thumb.minimum <= value && thumb.maximum >= value)
+                
+                if(valueDelta < nearestValue && valueInRange)
                 {
                     nearestValue = valueDelta;
-                    nearestThumb = instance;
+                    nearestThumb = thumb;
                 }
             } 
             
