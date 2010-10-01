@@ -1,6 +1,6 @@
 package com.patrickmowrer.components.test
 {
-    import com.patrickmowrer.components.supportClasses.SliderBase2;
+    import com.patrickmowrer.components.supportClasses.SliderBase;
     import com.patrickmowrer.components.supportClasses.Thumb;
     import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
     
@@ -23,14 +23,14 @@ package com.patrickmowrer.components.test
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule();
         
-        private var slider:SliderBase2;
+        private var slider:SliderBase;
         
         private var testValues:Array = [-5, 23, 47, 68, 89];
         
         [Before(async, ui)]
         public function setUp():void
         {
-            slider = new SliderBase2();
+            slider = new SliderBase();
             slider.thumb = new ThumbFactory();
             slider.layout = new ValueBasedLayoutDummy();
             slider.minimum = -10;

@@ -1,8 +1,8 @@
 package com.patrickmowrer.components
 {
-    import com.patrickmowrer.components.supportClasses.SliderBase2;
+    import com.patrickmowrer.components.supportClasses.SliderBase;
     
-    public class HSlider extends SliderBase2
+    public class HSlider extends SliderBase
     {
         public function HSlider()
         {

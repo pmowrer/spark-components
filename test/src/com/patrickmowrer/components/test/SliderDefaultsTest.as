@@ -1,6 +1,6 @@
 package com.patrickmowrer.components.test
 {
-    import com.patrickmowrer.components.supportClasses.SliderBase2;
+    import com.patrickmowrer.components.supportClasses.SliderBase;
     
     import flash.events.Event;
     
@@ -20,12 +20,12 @@ package com.patrickmowrer.components.test
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule(); 
         
-        private var slider:SliderBase2;
+        private var slider:SliderBase;
         
         [Before(async, ui)]
         public function setUp():void
         {
-            slider = new SliderBase2();
+            slider = new SliderBase();
             
             UIImpersonator.addChild(slider);
             after(FlexEvent.UPDATE_COMPLETE).on(slider).pass();

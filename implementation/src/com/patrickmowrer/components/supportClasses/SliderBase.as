@@ -18,7 +18,7 @@ package com.patrickmowrer.components.supportClasses
     import spark.components.Button;
     import spark.components.SkinnableContainer;
     
-    public class SliderBase2 extends SkinnableContainer implements ValueBounding, ValueSnapInterval
+    public class SliderBase extends SkinnableContainer implements ValueBounding, ValueSnapInterval
     {
         [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.Thumb")]
         public var thumb:IFactory;
@@ -47,7 +47,7 @@ package com.patrickmowrer.components.supportClasses
         
         private var thumbs:Vector.<Thumb>;
         
-        public function SliderBase2()
+        public function SliderBase()
         {
             super();
             

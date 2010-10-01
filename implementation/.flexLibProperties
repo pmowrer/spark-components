@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" version="3">
   <includeClasses>
-    <classEntry path="com.patrickmowrer.components.HSliders"/>
     <classEntry path="com.patrickmowrer.components.VSliders"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.SlidersBase"/>
     <classEntry path="com.patrickmowrer.skins.HSlidersSkin"/>
-    <classEntry path="com.patrickmowrer.skins.ThumblessHSliderSkin"/>
-    <classEntry path="com.patrickmowrer.skins.TracklessHSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.TracklessVSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.VSlidersSkin"/>
     <classEntry path="com.patrickmowrer.layouts.HorizontalValueLayout"/>
@@ -14,7 +10,7 @@
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueBounding"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.Thumb"/>
     <classEntry path="com.patrickmowrer.layouts.supportClasses.ValueBasedLayout"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.SliderBase2"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.SliderBase"/>
     <classEntry path="com.patrickmowrer.components.HSlider"/>
     <classEntry path="com.patrickmowrer.skins.HSliderSkin"/>
     <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
