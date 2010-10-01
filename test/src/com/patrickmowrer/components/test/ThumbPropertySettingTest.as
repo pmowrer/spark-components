@@ -148,5 +148,44 @@ package com.patrickmowrer.components.test
             after(FlexEvent.UPDATE_COMPLETE).on(thumb)
                 .assert(thumb, "minimum").equals(ARBITRARY_VALUE_LESS_THAN_DEF_VALUE);
         }
+        
+        [Test(async)]
+        public function defaultSnapIntervalIs1():void
+        {
+            assertThat(thumb.snapInterval, equalTo(1));
+        }
+        
+        [Test(async)]
+        public function valueIsAdjustedToNearestMultipleOfSnapIntervalExceptWhenLatterIs0():void
+        {
+            thumb.snapInterval = 3;
+            thumb.value = 4;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(thumb)
+                .assert(thumb, "value").equals(3);
+        }
+        
+        [Test(async)]
+        public function snapIntervalDoesNotAffectValueAtMinimum():void
+        {
+            thumb.minimum = 4;
+            thumb.value = 4;
+            thumb.snapInterval = 3;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(thumb)
+                .assert(thumb, "value").equals(4);
+        }
+        
+        [Test(async)]
+        public function snapIntervalDoesNotAffectValueAtMaximum():void
+        {
+            thumb.minimum = 0;
+            thumb.maximum = 4;
+            thumb.value = 4;
+            thumb.snapInterval = 3;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(thumb)
+                .assert(thumb, "value").equals(4);
+        }
     }
 }

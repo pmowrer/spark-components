@@ -6,7 +6,6 @@
     <classEntry path="com.patrickmowrer.components.supportClasses.SlidersBase"/>
     <classEntry path="com.patrickmowrer.skins.HSlidersSkin"/>
     <classEntry path="com.patrickmowrer.skins.ThumblessHSliderSkin"/>
-    <classEntry path="com.patrickmowrer.skins.ThumblessVSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.TracklessHSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.TracklessVSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.VSlidersSkin"/>

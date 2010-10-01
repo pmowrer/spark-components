@@ -143,12 +143,20 @@ package com.patrickmowrer.components.test
         }
         
         [Test]
-        public function canAllowOverlappingValues():void
+        public function allowsOverlappingValues():void
         {
             slider.allowOverlap = true;
             slider.values = [5, 10, 2];
             
             after(FlexEvent.UPDATE_COMPLETE).on(slider).assert(slider, "values").equals([5, 10, 2]);
+        }
+        
+        [Test(async)]
+        public function valuesAreAdjustedNearestMultiplesOfSnapInterval():void
+        {
+            slider.snapInterval = 4;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider).assert(slider, "values").equals([-6, 22, 46, 70, 90]);
         }
     }
 }

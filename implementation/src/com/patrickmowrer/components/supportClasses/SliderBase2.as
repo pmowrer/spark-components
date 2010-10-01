@@ -210,7 +210,7 @@ package com.patrickmowrer.components.supportClasses
         {
             super.commitProperties();
             
-            if(valuesChanged || minimumChanged || maximumChanged || allowOverlapChanged)
+            if(valuesChanged || minimumChanged || maximumChanged || snapIntervalChanged || allowOverlapChanged)
             {
                 if(valueBasedLayout)
                 {
@@ -236,6 +236,7 @@ package com.patrickmowrer.components.supportClasses
                 
                 minimumChanged = false;
                 maximumChanged = false;
+                snapIntervalChanged = false;
                 valuesChanged = false;
                 allowOverlapChanged = false;
             }
@@ -263,9 +264,10 @@ package com.patrickmowrer.components.supportClasses
                         getQualifiedClassName(Thumb));
                 }
                 
-                thumb.value = values[index];
                 thumb.minimum = minimum;
                 thumb.maximum = maximum;
+                thumb.snapInterval = snapInterval;
+                thumb.value = values[index];
                 
                 addElement(thumb);
                 thumbs.push(thumb);
