@@ -1,10 +1,12 @@
 package com.patrickmowrer.layouts
 {
-    import com.patrickmowrer.components.supportClasses.Value;
     import com.patrickmowrer.components.supportClasses.ValueBounding;
+    import com.patrickmowrer.components.supportClasses.ValueCarrying;
+    import com.patrickmowrer.components.supportClasses.ValueRange;
     import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
     
     import flash.display.DisplayObject;
+    import flash.events.Event;
     
     import mx.core.IVisualElement;
     
@@ -14,43 +16,36 @@ package com.patrickmowrer.layouts
     {
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;
-        
-        private var _minimum:Number = DEFAULT_MINIMUM;
-        private var _maximum:Number = DEFAULT_MAXIMUM;
+
+        private var valueRange:ValueRange;
         
         public function HorizontalValueLayout()
         {
             super();
+            
+            valueRange = new ValueRange(DEFAULT_MINIMUM, DEFAULT_MAXIMUM, 0);
         }
         
         public function get minimum():Number
         {
-            return _minimum;
+            return valueRange.minimum;
         }
         
         public function set minimum(value:Number):void
-        {            
-            if(_minimum != value)
-            {
-                _minimum = Math.min(value, _maximum);
-                
-                invalidateTargetDisplayList();
-            }
+        {    
+            valueRange.minimum = value;            
+            invalidateTargetDisplayList();
         }
         
         public function get maximum():Number
         {
-            return _maximum;
+            return valueRange.maximum;
         }
         
         public function set maximum(value:Number):void
         {
-            if(_maximum != value)
-            {
-                _maximum = Math.max(value, _minimum);
-
-                invalidateTargetDisplayList();
-            }
+            valueRange.maximum = value;
+            invalidateTargetDisplayList();
         }
         
         public function pointToValue(x:Number, y:Number):Number
@@ -58,7 +53,9 @@ package com.patrickmowrer.layouts
             if(!target)
                 return 0;
             
-            return (x / target.getLayoutBoundsWidth()) * minMaxDelta + minimum;
+            var fractionOfTotalWidth:Number = x / target.getLayoutBoundsWidth();
+            
+            return valueRange.getNearestValidValueFromFraction(fractionOfTotalWidth);
         }
         
         override public function updateDisplayList(width:Number, height:Number):void
@@ -71,9 +68,15 @@ package com.patrickmowrer.layouts
             {
                 element = target.getElementAt(index);
                 
-                if(element is Value)
+                if(element is ValueCarrying)
                 {
-                    var x:Number = width * fractionOfRange(Value(element).value);
+                    var value:Number = ValueCarrying(element).value;
+                    var rangeFraction:Number = valueRange.getNearestValidFractionOfRange(value);
+                    var elementWidth:Number = getElementWidth(element);
+                    
+                    var x:Number = width * rangeFraction;
+                    var xMax:Number = width - getElementWidth(element);
+                    x = Math.min(x, xMax);
                     
                     element.setLayoutBoundsSize(NaN, NaN);
                     element.setLayoutBoundsPosition(x, 0);
@@ -86,33 +89,18 @@ package com.patrickmowrer.layouts
             super.measure();
         }
         
-        private function fractionOfRange(value:Number):Number
+        private function getElementWidth(element:IVisualElement):Number
         {
-            if(value > maximum)
-            {
-                return 1;
-            }
-            else if(value < minimum)
-            {
-                return 0;
-            }
+            if(element.getLayoutBoundsWidth() > 0)
+                return element.getLayoutBoundsWidth();
             else
-            {
-                return Math.abs(value - minimum) / minMaxDelta;
-            }
-        }
-        
-        private function get minMaxDelta():Number
-        {
-            return maximum - minimum;
+                return element.getPreferredBoundsWidth();
         }
         
         private function invalidateTargetDisplayList():void
         {
             if(target)
-            {
                 target.invalidateDisplayList();
-            }
         }
     }
 }

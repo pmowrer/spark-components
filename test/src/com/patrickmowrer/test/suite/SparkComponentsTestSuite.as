@@ -1,4 +1,4 @@
-package com.patrickmowrer.components.test
+package com.patrickmowrer.test.suite
 {
     
     [Suite]

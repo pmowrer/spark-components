@@ -3,6 +3,7 @@ package com.patrickmowrer.components.supportClasses
     import com.patrickmowrer.events.ThumbEvent;
     
     import flash.display.DisplayObject;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     
@@ -11,87 +12,84 @@ package com.patrickmowrer.components.supportClasses
     
     import spark.components.Button;
     
-    public class Thumb extends Button implements Value, ValueBounding, ValueSnapInterval
+    public class Thumb extends Button implements ValueCarrying, ValueBounding, ValueInterval
     {
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;
         private const DEFAULT_SNAP_INTERVAL:Number = 1;
         private const DEFAULT_VALUE:Number = 0;
         
-        private var _minimum:Number = DEFAULT_MINIMUM;
-        private var _maximum:Number = DEFAULT_MAXIMUM;
-        private var _snapInterval:Number = DEFAULT_SNAP_INTERVAL;
-        private var _value:Number = DEFAULT_VALUE;
-        
-        private var minimumChanged:Boolean = false;
-        private var maximumChanged:Boolean = false;
-        private var snapIntervalChanged:Boolean = false;
+        private var _value:Number;
+        private var newValue:Number = DEFAULT_VALUE;
         private var valueChanged:Boolean = false;
         
+        private var valueRange:ValueRange;
         private var clickOffset:Point;
         
         public function Thumb()
         {
             super();
             
+            valueRange = new ValueRange(DEFAULT_MINIMUM, DEFAULT_MAXIMUM, DEFAULT_SNAP_INTERVAL);
+
             addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true);
         }
         
         public function get minimum():Number
         {
-            return _minimum;
+            return valueRange.minimum;
         }
 
         public function set minimum(value:Number):void
         {
-            if(_minimum != value)
+            if(value != minimum)
             {
-                _minimum = value;
-                minimumChanged = true;
+                valueRange.minimum = value;
                 invalidateProperties();
             }
         }
         
         public function get maximum():Number
         {
-            return _maximum;
+            return valueRange.maximum;
         }
         
         public function set maximum(value:Number):void
         {
-            if(_maximum != value)
+            if(value != maximum)
             {
-                _maximum = value;
-                maximumChanged = true;
+                valueRange.maximum = value;
                 invalidateProperties();
             }
         }
             
         public function get snapInterval():Number
         {
-            return _snapInterval;
+            return valueRange.interval;
         }
         
         public function set snapInterval(value:Number):void
         {
-            if(_snapInterval != value)
+            if(value != snapInterval)
             {
-                _snapInterval = value;
-                snapIntervalChanged = true;
+                valueRange.interval = value;
                 invalidateProperties();
-            }            
+            }
         }
 
         public function get value():Number
         {
-            return _value;
+            if(valueChanged)
+                return newValue;
+            else
+                return _value;
         }
         
         public function set value(value:Number):void
         {
-            if(_value != value)
+            if(this.value != value)
             {
-                _value = value;
+                newValue = value;
                 valueChanged = true;
                 invalidateProperties();
             }
@@ -101,64 +99,18 @@ package com.patrickmowrer.components.supportClasses
         {
             super.commitProperties();
             
-            if(minimumChanged || maximumChanged) 
-            {
-                if(minimum > maximum)
-                    minimum = maximum;
-                
-                if(minimum > value || maximum < value)
-                    valueChanged = true;
-                
-                minimumChanged = false;
-                maximumChanged = false;
-            }
+            newValue = valueRange.getNearestValidValueTo(newValue);
             
-            if(valueChanged || snapIntervalChanged)
+            if(newValue != _value)
             {
-                _value = nearestValidValue(_value, _snapInterval);
+                _value = newValue;
                 
                 dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
-                
-                valueChanged = false;
             }
-        }
-        
-        protected function nearestValidValue(value:Number, interval:Number):Number
-        { 
-            if (interval == 0)
-                return Math.max(minimum, Math.min(maximum, value));
             
-            var maxValue:Number = maximum - minimum;
-            var scale:Number = 1;
-            
-            value -= minimum;
-            
-            // If interval isn't an integer, there's a possibility that the floating point 
-            // approximation of value or value/interval will be slightly larger or smaller 
-            // than the real value.  This can lead to errors in calculations like 
-            // floor(value/interval)*interval, which one might expect to just equal value, 
-            // when value is an exact multiple of interval.  Not so if value=0.58 and 
-            // interval=0.01, in that case the calculation yields 0.57!  To avoid problems, 
-            // we scale by the implicit precision of the interval and then round.  For 
-            // example if interval=0.01, then we scale by 100.    
-            
-            if (interval != Math.round(interval)) 
-            { 
-                const parts:Array = (new String(1 + interval)).split("."); 
-                scale = Math.pow(10, parts[1].length);
-                maxValue *= scale;
-                value = Math.round(value * scale);
-                interval = Math.round(interval * scale);
-            }   
-            
-            var lower:Number = Math.max(0, Math.floor(value / interval) * interval);
-            var upper:Number = Math.min(maxValue, Math.floor((value + interval) / interval) * interval);
-            var validValue:Number = ((value - lower) >= ((upper - lower) / 2)) ? upper : lower;
-            
-            return (validValue / scale) + minimum;
+            valueChanged = false;
         }
 
-        
         private function mouseDownHandler(event:MouseEvent):void
         {
             var sandboxRoot:DisplayObject = systemManager.getSandboxRoot();
@@ -178,6 +130,9 @@ package com.patrickmowrer.components.supportClasses
             var thumbEvent:ThumbEvent = new ThumbEvent(ThumbEvent.DRAG);
             thumbEvent.stageX = mouseMovedTo.x;
             thumbEvent.stageY = mouseMovedTo.y;
+            
+            trace(event.stageX, event.stageY);
+            trace(thumbEvent.stageX, thumbEvent.stageY);
             
             dispatchEvent(thumbEvent);
         }

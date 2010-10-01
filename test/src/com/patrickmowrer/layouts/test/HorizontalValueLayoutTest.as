@@ -85,10 +85,16 @@ package com.patrickmowrer.layouts.test
                 .assert(value1, "x").equals(5);
         }
         
-        [Test(async)]
+        [Test]
         public function translatesXCoordinateToValueBasedOnTargetWidthAndMinMax():void
         {            
             assertThat(layout.pointToValue(48, 0), equalTo(44));
+        }
+        
+        [Test]
+        public function preservesFloatingPointXCoordinateInValue():void
+        {            
+            assertThat(layout.pointToValue(48.3234287352537, 0), equalTo(44.16171436762685));
         }
         
         [Test]
@@ -148,11 +154,11 @@ package com.patrickmowrer.layouts.test
     }
 }
 
-import com.patrickmowrer.components.supportClasses.Value;
+import com.patrickmowrer.components.supportClasses.ValueCarrying;
 
 import mx.core.UIComponent;
 
-internal class VisualElementWithValue extends UIComponent implements Value
+internal class VisualElementWithValue extends UIComponent implements ValueCarrying
 {
     private var _value:Number;
     

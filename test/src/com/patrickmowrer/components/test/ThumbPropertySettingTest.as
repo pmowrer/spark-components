@@ -66,8 +66,8 @@ package com.patrickmowrer.components.test
             
             thumb.value = ARBITRARY_VALUE_BETWEEN_DEF_MINMAX;
             
-            after(FlexEvent.UPDATE_COMPLETE).on(thumb).
-                assert(thumb).observed(FlexEvent.VALUE_COMMIT, times(1));          
+            after(FlexEvent.UPDATE_COMPLETE).on(thumb)
+                .assert(thumb).observed(FlexEvent.VALUE_COMMIT, times(1));          
         }
         
         [Test(async)]
@@ -132,21 +132,11 @@ package com.patrickmowrer.components.test
         [Test(async)]
         public function settingMaximumLowerThanValueAdjustsLatterToFormer():void
         {
+            thumb.minimum = ARBITRARY_VALUE_LESS_THAN_DEF_VALUE - 10;
             thumb.maximum = ARBITRARY_VALUE_LESS_THAN_DEF_VALUE;
-            thumb.minimum = thumb.maximum - 10;
             
             after(FlexEvent.UPDATE_COMPLETE).on(thumb)
                 .assert(thumb, "value").equals(ARBITRARY_VALUE_LESS_THAN_DEF_VALUE);
-        }
-        
-        [Test(async)]
-        public function settingMinimumHigherThanMaximumAdjustsFormerToLatter():void
-        {
-            thumb.minimum = ARBITRARY_VALUE_GREATER_THAN_DEF_VALUE;
-            thumb.maximum = ARBITRARY_VALUE_LESS_THAN_DEF_VALUE;
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(thumb)
-                .assert(thumb, "minimum").equals(ARBITRARY_VALUE_LESS_THAN_DEF_VALUE);
         }
         
         [Test(async)]

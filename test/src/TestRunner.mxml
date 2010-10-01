@@ -9,7 +9,7 @@
     <mx:Script>
         <![CDATA[
             
-            import com.patrickmowrer.components.test.SparkComponentsTestSuite;
+            import com.patrickmowrer.test.suite.SparkComponentsTestSuite;
             
             import mx.logging.LogEventLevel;
             

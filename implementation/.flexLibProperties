@@ -6,7 +6,7 @@
     <classEntry path="com.patrickmowrer.skins.TracklessVSliderSkin"/>
     <classEntry path="com.patrickmowrer.skins.VSlidersSkin"/>
     <classEntry path="com.patrickmowrer.layouts.HorizontalValueLayout"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.Value"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.ValueCarrying"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueBounding"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.Thumb"/>
     <classEntry path="com.patrickmowrer.layouts.supportClasses.ValueBasedLayout"/>
@@ -14,7 +14,7 @@
     <classEntry path="com.patrickmowrer.components.HSlider"/>
     <classEntry path="com.patrickmowrer.skins.HSliderSkin"/>
     <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.ValueSnapInterval"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.ValueRange"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
