@@ -24,7 +24,7 @@ package com.patrickmowrer.components.supportClasses
         private var valueChanged:Boolean = false;
         
         private var valueRange:ValueRange;
-        private var clickOffset:Point;
+        private var clickOffsetFromCenter:Point;
         
         public function Thumb()
         {
@@ -65,14 +65,14 @@ package com.patrickmowrer.components.supportClasses
             
         public function get snapInterval():Number
         {
-            return valueRange.interval;
+            return valueRange.snapInterval;
         }
         
         public function set snapInterval(value:Number):void
         {
             if(value != snapInterval)
             {
-                valueRange.interval = value;
+                valueRange.snapInterval = value;
                 invalidateProperties();
             }
         }
@@ -119,20 +119,21 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.addEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
             sandboxRoot.addEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler);  
             
-            clickOffset = globalToLocal(new Point(event.stageX, event.stageY));
+            var localClick:Point = globalToLocal(new Point(event.stageX, event.stageY));
+            var xOffsetFromCenter:Number = localClick.x - (getLayoutBoundsWidth() / 2);
+            var yOffsetFromCenter:Number = localClick.y - (getLayoutBoundsHeight() / 2);
+            
+            clickOffsetFromCenter = new Point(xOffsetFromCenter, yOffsetFromCenter);
         }
         
         private function systemMouseMoveHandler(event:MouseEvent):void
         {
             var mouseMovedTo:Point = 
-                new Point(event.stageX - clickOffset.x, event.stageY - clickOffset.y);
+                new Point(event.stageX - clickOffsetFromCenter.x, event.stageY - clickOffsetFromCenter.y / 2);
             
             var thumbEvent:ThumbEvent = new ThumbEvent(ThumbEvent.DRAG);
             thumbEvent.stageX = mouseMovedTo.x;
             thumbEvent.stageY = mouseMovedTo.y;
-            
-            trace(event.stageX, event.stageY);
-            trace(thumbEvent.stageX, thumbEvent.stageY);
             
             dispatchEvent(thumbEvent);
         }
@@ -145,7 +146,7 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.removeEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
             sandboxRoot.removeEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler); 
             
-            clickOffset = null;
+            clickOffsetFromCenter = null;
         }
     }
 }

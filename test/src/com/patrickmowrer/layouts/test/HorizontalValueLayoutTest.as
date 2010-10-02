@@ -1,7 +1,6 @@
 package com.patrickmowrer.layouts.test
 {
     import com.patrickmowrer.layouts.HorizontalValueLayout;
-    import com.patrickmowrer.utils.afterSequence;
     
     import flash.events.Event;
     
@@ -11,10 +10,7 @@ package com.patrickmowrer.layouts.test
     
     import org.flexunit.assertThat;
     import org.flexunit.rules.IMethodRule;
-    import org.fluint.sequence.SequenceCaller;
-    import org.fluint.sequence.SequenceRunner;
-    import org.fluint.sequence.SequenceSetter;
-    import org.fluint.sequence.SequenceWaiter;
+
     import org.fluint.uiImpersonation.UIImpersonator;
     import org.hamcrest.object.equalTo;
     import org.hamcrest.object.hasProperty;
@@ -70,6 +66,18 @@ package com.patrickmowrer.layouts.test
                 .assert(value1, "x").equals(40).and()
                 .assert(value2, "x").equals(48).and()
                 .assert(value3, "x").equals(96);
+        }
+        
+        [Test]
+        public function elementIsCenterPositionedOverValue():void
+        {
+            var value:VisualElementWithValue = new VisualElementWithValue(40);
+            value.setLayoutBoundsSize(20, 0);
+            
+            group.addElement(value);
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(group)
+                .assert(value, "x").equals(30);
         }
         
         [Test]

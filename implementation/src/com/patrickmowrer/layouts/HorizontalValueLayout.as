@@ -72,9 +72,8 @@ package com.patrickmowrer.layouts
                 {
                     var value:Number = ValueCarrying(element).value;
                     var rangeFraction:Number = valueRange.getNearestValidFractionOfRange(value);
-                    var elementWidth:Number = getElementWidth(element);
                     
-                    var x:Number = width * rangeFraction;
+                    var x:Number = (width * rangeFraction) - (getElementWidth(element) / 2);
                     var xMax:Number = width - getElementWidth(element);
                     x = Math.min(x, xMax);
                     

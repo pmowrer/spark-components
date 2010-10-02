@@ -43,7 +43,7 @@ package com.patrickmowrer.components.test
         {
             var floatingPoint:Number = 1.22354565637589688569;
             
-            valueRange.interval = 0;
+            valueRange.snapInterval = 0;
             
             assertThat(valueRange.getNearestValidValueTo(floatingPoint), equalTo(floatingPoint));
         }
@@ -53,9 +53,9 @@ package com.patrickmowrer.components.test
         {
             var floatingPoint:Number = 1.22354565637589688569;
             
-            valueRange.interval = 2;
+            valueRange.snapInterval = 2;
             
-            assertThat(valueRange.getNearestValidValueTo(floatingPoint), equalTo(valueRange.interval));
+            assertThat(valueRange.getNearestValidValueTo(floatingPoint), equalTo(valueRange.snapInterval));
         }
     }
 }

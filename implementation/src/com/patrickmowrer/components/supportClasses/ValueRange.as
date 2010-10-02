@@ -1,16 +1,16 @@
 package com.patrickmowrer.components.supportClasses
 {
-    public class ValueRange implements ValueBounding
+    public class ValueRange implements ValueBounding, ValueInterval
     {
         private var _minimum:Number;
         private var _maximum:Number;
         private var _interval:Number;
         
-        public function ValueRange(minimum:Number, maximum:Number, interval:Number)
+        public function ValueRange(minimum:Number, maximum:Number, snapInterval:Number)
         {
             this.minimum = minimum;
             this.maximum = maximum;
-            this.interval = interval;
+            this.snapInterval = snapInterval;
         }
 
         public function get minimum():Number
@@ -49,14 +49,14 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        public function get interval():Number
+        public function get snapInterval():Number
         {
             return _interval;
         }
         
-        public function set interval(value:Number):void
+        public function set snapInterval(value:Number):void
         {
-            if(value != interval)
+            if(value != snapInterval)
             {
                 _interval = value;
             }
@@ -76,7 +76,7 @@ package com.patrickmowrer.components.supportClasses
         
         public function getNearestValidValueTo(value:Number):Number
         { 
-            if (interval == 0)
+            if (snapInterval == 0)
                 return Math.max(minimum, Math.min(maximum, value));
             
             var maxValue:Number = maximum - minimum;
@@ -93,17 +93,17 @@ package com.patrickmowrer.components.supportClasses
             // we scale by the implicit precision of the interval and then round.  For 
             // example if interval=0.01, then we scale by 100.    
             
-            if (interval != Math.round(interval)) 
+            if (snapInterval != Math.round(snapInterval)) 
             { 
-                const parts:Array = (new String(1 + interval)).split("."); 
+                const parts:Array = (new String(1 + snapInterval)).split("."); 
                 scale = Math.pow(10, parts[1].length);
                 maxValue *= scale;
                 value = Math.round(value * scale);
-                interval = Math.round(interval * scale);
+                snapInterval = Math.round(snapInterval * scale);
             }   
             
-            var lower:Number = Math.max(0, Math.floor(value / interval) * interval);
-            var upper:Number = Math.min(maxValue, Math.floor((value + interval) / interval) * interval);
+            var lower:Number = Math.max(0, Math.floor(value / snapInterval) * snapInterval);
+            var upper:Number = Math.min(maxValue, Math.floor((value + snapInterval) / snapInterval) * snapInterval);
             var validValue:Number = ((value - lower) >= ((upper - lower) / 2)) ? upper : lower;
             
             return (validValue / scale) + minimum;
