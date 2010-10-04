@@ -18,7 +18,7 @@ package com.patrickmowrer.components.supportClasses
     import spark.components.Button;
     import spark.components.SkinnableContainer;
     
-    public class SliderBase extends SkinnableContainer implements ValueBounding, ValueInterval
+    public class SliderBase extends SkinnableContainer implements ValueBounding, ValueSnapping
     {
         [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.Thumb")]
         public var thumb:IFactory;
@@ -44,8 +44,10 @@ package com.patrickmowrer.components.supportClasses
         private var allowOverlapChanged:Boolean = false;
         private var snapIntervalChanged:Boolean = false;
         private var thumbValueChanged:Boolean = false;
+        private var animating:Boolean = false;
         
         private var thumbs:Vector.<Thumb>;
+        private var animatedThumb:Thumb;
         
         public function SliderBase()
         {
@@ -250,13 +252,10 @@ package com.patrickmowrer.components.supportClasses
         }
         
         private function createThumbsFrom(values:Array):void
-        {
-            var thumb:Thumb;
-            var indicies:int = values.length;
-            
-            for(var index:int = 0; index < indicies; index++)
+        {   
+            for(var index:int = 0; index < values.length; index++)
             {
-                thumb = Thumb(createDynamicPartInstance("thumb"));
+                var thumb:Thumb = Thumb(createDynamicPartInstance("thumb"));
                 
                 if(!thumb)
                 {
@@ -334,8 +333,6 @@ package com.patrickmowrer.components.supportClasses
                     = contentGroup.globalToLocal(new Point(event.stageX, event.stageY));
                 
                 thumb.value = valueBasedLayout.pointToValue(draggedTo.x, draggedTo.y);
-                
-                contentGroup.invalidateDisplayList();
             }
         }
         
@@ -351,6 +348,8 @@ package com.patrickmowrer.components.supportClasses
                 thumbValueChanged = true;
                 invalidateProperties();
             }
+            
+            contentGroup.invalidateDisplayList();
         }
         
         private function constrainThumb(thumb:Thumb):void
@@ -373,9 +372,19 @@ package com.patrickmowrer.components.supportClasses
                     = valueBasedLayout.pointToValue(trackRelative.x, trackRelative.y);
                 var nearestThumb:Thumb = nearestThumbTo(trackClickValue);
                 
-                nearestThumb.value = trackClickValue;
-                
-                contentGroup.invalidateDisplayList();
+                if(true)
+                {
+                    if(animating)
+                        animatedThumb.stopAnimation();
+                    
+                    animating = true;
+                    animatedThumb = nearestThumb;
+                    animatedThumb.animateMovementTo(trackClickValue, endAnimation);
+                }
+                else
+                {
+                    nearestThumb.value = trackClickValue;
+                }
             }
         }
         
@@ -400,6 +409,21 @@ package com.patrickmowrer.components.supportClasses
             } 
             
             return nearestThumb;
+        }
+        
+        private function endAnimation():void
+        {
+            constrainThumb(animatedThumb);
+            animatedThumb = null;
+            
+            animating = false;            
+        }
+        
+        private function stopAnimation():void
+        {
+            animatedThumb.stopAnimation();
+            
+            endAnimation();
         }
     }
 }

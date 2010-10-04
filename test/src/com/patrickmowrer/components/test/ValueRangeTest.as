@@ -56,6 +56,6 @@ package com.patrickmowrer.components.test
             valueRange.snapInterval = 2;
             
             assertThat(valueRange.getNearestValidValueTo(floatingPoint), equalTo(valueRange.snapInterval));
-        }
+        }        
     }
 }

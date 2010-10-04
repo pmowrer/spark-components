@@ -1,6 +1,6 @@
 package com.patrickmowrer.components.supportClasses
 {
-    public interface ValueInterval
+    public interface ValueSnapping
     {
         function get snapInterval():Number;
         function set snapInterval(value:Number):void;

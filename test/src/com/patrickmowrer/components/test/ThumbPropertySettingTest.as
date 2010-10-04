@@ -105,7 +105,7 @@ package com.patrickmowrer.components.test
         }
         
         [Test(async)]
-        public function defaultMaximumIs0():void
+        public function defaultMaximumIs100():void
         {
             assertThat(thumb.maximum, equalTo(DEFAULT_MAX));
         }

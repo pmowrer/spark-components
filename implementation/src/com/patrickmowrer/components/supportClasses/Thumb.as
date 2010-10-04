@@ -11,8 +11,11 @@ package com.patrickmowrer.components.supportClasses
     import mx.events.SandboxMouseEvent;
     
     import spark.components.Button;
+    import spark.effects.animation.MotionPath;
+    import spark.effects.animation.SimpleMotionPath;
+    import spark.effects.easing.Sine;
     
-    public class Thumb extends Button implements ValueCarrying, ValueBounding, ValueInterval
+    public class Thumb extends Button implements ValueCarrying, ValueBounding, ValueSnapping
     {
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;
@@ -25,6 +28,7 @@ package com.patrickmowrer.components.supportClasses
         
         private var valueRange:ValueRange;
         private var clickOffsetFromCenter:Point;
+        private var animation:SimpleThumbAnimation;
         
         public function Thumb()
         {
@@ -92,6 +96,21 @@ package com.patrickmowrer.components.supportClasses
                 newValue = value;
                 valueChanged = true;
                 invalidateProperties();
+            }
+        }
+        
+        public function animateMovementTo(value:Number, endHandler:Function):void
+        {
+            animation = new SimpleThumbAnimation(this);
+            
+            animation.play(1000, valueRange.getNearestValidValueTo(value), endHandler);
+        }
+        
+        public function stopAnimation():void
+        {
+            if(animation.isPlaying())
+            {
+                animation.stop();
             }
         }
         

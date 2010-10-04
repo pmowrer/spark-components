@@ -11,11 +11,6 @@
         [HostComponent("com.patrickmowrer.components.HSlider")]
     </fx:Metadata>
 
-    <fx:Script>
-        <![CDATA[
-            import mx.skins.spark.SliderTrackSkin;
-        ]]>
-    </fx:Script>
     <s:states>
         <s:State name="normal" />
         <s:State name="up" />

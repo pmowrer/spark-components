@@ -1,6 +1,6 @@
 package com.patrickmowrer.components.supportClasses
 {
-    public class ValueRange implements ValueBounding, ValueInterval
+    public class ValueRange implements ValueBounding, ValueSnapping
     {
         private var _minimum:Number;
         private var _maximum:Number;
@@ -62,16 +62,21 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
+        public function get boundsDelta():Number
+        {
+            return maximum - minimum;
+        }
+        
         public function getNearestValidValueFromFraction(fraction:Number):Number
         {
-            var valueFromFraction:Number = fraction * boundingDelta + minimum;
+            var valueFromFraction:Number = fraction * boundsDelta + minimum;
             
             return getNearestValidValueTo(valueFromFraction);
         }
         
         public function getNearestValidFractionOfRange(value:Number):Number
         {
-            return (getNearestValidValueTo(value) - minimum) / boundingDelta;
+            return (getNearestValidValueTo(value) - minimum) / boundsDelta;
         }
         
         public function getNearestValidValueTo(value:Number):Number
@@ -107,11 +112,6 @@ package com.patrickmowrer.components.supportClasses
             var validValue:Number = ((value - lower) >= ((upper - lower) / 2)) ? upper : lower;
             
             return (validValue / scale) + minimum;
-        }
-        
-        private function get boundingDelta():Number
-        {
-            return maximum - minimum;
         }
     }
 }

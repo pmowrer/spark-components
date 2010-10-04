@@ -15,6 +15,10 @@
     <classEntry path="com.patrickmowrer.skins.HSliderSkin"/>
     <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueRange"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.AnimationTarget"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.ThumbAnimation"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.SimpleThumbAnimation"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.StrictValueRange"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
