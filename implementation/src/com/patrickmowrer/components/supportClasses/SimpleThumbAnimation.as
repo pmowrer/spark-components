@@ -11,6 +11,7 @@ package com.patrickmowrer.components.supportClasses
         private var thumb:Thumb;
         private var endValue:Number;
         private var afterHandler:Function;
+        private var originalSnapInterval:Number;
         
         public function SimpleThumbAnimation(thumb:Thumb)
         {
@@ -28,6 +29,9 @@ package com.patrickmowrer.components.supportClasses
         {
             this.afterHandler = afterHandler;
             this.endValue = endValue;
+            
+            originalSnapInterval = thumb.snapInterval;
+            thumb.snapInterval = 0;
             
             var startValue:Number = thumb.value;
             
@@ -62,6 +66,7 @@ package com.patrickmowrer.components.supportClasses
         
         private function finish():void
         {
+            thumb.snapInterval = originalSnapInterval;
             afterHandler();
         }
         

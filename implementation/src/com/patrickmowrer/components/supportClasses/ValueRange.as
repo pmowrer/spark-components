@@ -113,5 +113,29 @@ package com.patrickmowrer.components.supportClasses
             
             return (validValue / scale) + minimum;
         }
+        
+        public function roundToNearestLesserInterval(value:Number):Number
+        {
+            if(snapInterval != 0 && !isMultipleOfInterval(value))
+                return Math.floor((value - minimum) / snapInterval) * snapInterval + minimum;
+            else
+                return value;
+        }
+        
+        public function roundToNearestGreaterInterval(value:Number):Number
+        {
+            if(snapInterval != 0 && !isMultipleOfInterval(value))
+                return Math.ceil((value - minimum) / snapInterval) * snapInterval + minimum;
+            else
+                return value;
+        }
+        
+        private function isMultipleOfInterval(value:Number):Boolean
+        {
+            if(Math.abs(value - minimum) % snapInterval == 0)
+                return true
+            else
+                return false;
+        }
     }
 }

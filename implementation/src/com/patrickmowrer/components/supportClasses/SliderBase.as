@@ -325,6 +325,9 @@ package com.patrickmowrer.components.supportClasses
         
         private function thumbDragHandler(event:ThumbEvent):void
         {
+            if(animating)
+                animatedThumb.stopAnimation();
+            
             var thumb:Thumb = Thumb(event.currentTarget);
             
             if(valueBasedLayout)
@@ -357,10 +360,10 @@ package com.patrickmowrer.components.supportClasses
             var thumbIndex:int = getIndexOf(thumb);
             
             if(thumbIndex != 0)
-                getThumbAt(thumbIndex - 1).maximum = thumb.value;
+                getThumbAt(thumbIndex - 1).constrainMaximumTo(thumb);
             
             if(thumbIndex != numberOfThumbs - 1)
-                getThumbAt(thumbIndex + 1).minimum = thumb.value;           
+                getThumbAt(thumbIndex + 1).constrainMinimumTo(thumb);           
         }
         
         private function trackMouseDownHandler(event:MouseEvent):void
@@ -374,12 +377,7 @@ package com.patrickmowrer.components.supportClasses
                 
                 if(true)
                 {
-                    if(animating)
-                        animatedThumb.stopAnimation();
-                    
-                    animating = true;
-                    animatedThumb = nearestThumb;
-                    animatedThumb.animateMovementTo(trackClickValue, endAnimation);
+                    beginThumbAnimation(nearestThumb, trackClickValue);
                 }
                 else
                 {
@@ -411,12 +409,14 @@ package com.patrickmowrer.components.supportClasses
             return nearestThumb;
         }
         
-        private function endAnimation():void
+        private function beginThumbAnimation(thumb:Thumb, value:Number):void
         {
-            constrainThumb(animatedThumb);
-            animatedThumb = null;
+            if(animating)
+                animatedThumb.stopAnimation();
             
-            animating = false;            
+            animating = true;
+            animatedThumb = thumb;
+            animatedThumb.animateMovementTo(value, endAnimation);
         }
         
         private function stopAnimation():void
@@ -424,6 +424,13 @@ package com.patrickmowrer.components.supportClasses
             animatedThumb.stopAnimation();
             
             endAnimation();
+        }
+        
+        private function endAnimation():void
+        {
+            animatedThumb = null;
+            
+            animating = false;            
         }
     }
 }

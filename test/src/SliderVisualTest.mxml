@@ -29,7 +29,7 @@
 
     <local:MultivalueSliderModifiers x="100" y="350">
         <local:slider>        
-            <ns:HSlider width="200" values="{[50, 100, 20]}" />
+            <ns:HSlider width="500" values="{[50, 100, 20]}" />
         </local:slider>
     </local:MultivalueSliderModifiers> 
                    

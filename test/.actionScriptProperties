@@ -19,8 +19,8 @@
   <applications>
     <application path="TestRunner.mxml"/>
     <application path="SliderVisualTest.mxml"/>
-    <application path="FlexUnitApplication.mxml"/>
     <application path="FlexUnitCompilerApplication.mxml"/>
+    <application path="FlexUnitApplication.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>

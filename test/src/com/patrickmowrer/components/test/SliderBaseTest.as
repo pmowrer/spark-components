@@ -97,12 +97,12 @@ package com.patrickmowrer.components.test
         }
         
         [Test(async)]
-        public function dispatchesChangeEventOnceWhenAThumbValueChanges():void
+        public function dispatchesChangeEventWhenThumbValueChanges():void
         {
             var thumb:Thumb = Thumb(slider.getElementAt(0));
             thumb.value = 55;
             
-            after(Event.CHANGE).on(slider).pass();
+            after(FlexEvent.UPDATE_COMPLETE).on(slider).pass();
         }
         
         [Test(async)]

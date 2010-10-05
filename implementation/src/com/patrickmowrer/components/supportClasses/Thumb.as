@@ -99,6 +99,20 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
+        public function constrainMinimumTo(thumb:Thumb):void
+        {
+            var nearestGreaterInterval:Number = valueRange.roundToNearestGreaterInterval(thumb.value);
+            
+            minimum = nearestGreaterInterval;
+        }
+        
+        public function constrainMaximumTo(thumb:Thumb):void
+        {
+            var nearestLesserInterval:Number = valueRange.roundToNearestLesserInterval(thumb.value);
+            
+            maximum = nearestLesserInterval;
+        }
+        
         public function animateMovementTo(value:Number, endHandler:Function):void
         {
             animation = new SimpleThumbAnimation(this);

@@ -56,6 +56,28 @@ package com.patrickmowrer.components.test
             valueRange.snapInterval = 2;
             
             assertThat(valueRange.getNearestValidValueTo(floatingPoint), equalTo(valueRange.snapInterval));
-        }        
+        }      
+        
+        [Test]
+        public function roundsValueToNearestLesserSnapIntervalValue():void
+        {
+            valueRange.minimum = -3;
+            valueRange.snapInterval = 5;
+            
+            assertThat(valueRange.roundToNearestLesserInterval(-3.000001), equalTo(-8));
+            assertThat(valueRange.roundToNearestLesserInterval(-3), equalTo(-3));
+            assertThat(valueRange.roundToNearestLesserInterval(6.999999), equalTo(2));
+        }
+        
+        [Test]
+        public function roundsValueToNearestGreaterSnapIntervalValue():void
+        {
+            valueRange.minimum = 7;
+            valueRange.snapInterval = 4;
+            
+            assertThat(valueRange.roundToNearestGreaterInterval(7.00000001), equalTo(11));
+            assertThat(valueRange.roundToNearestGreaterInterval(7), equalTo(7));
+            assertThat(valueRange.roundToNearestGreaterInterval(-3.999999), equalTo(-1));        
+        }
     }
 }
