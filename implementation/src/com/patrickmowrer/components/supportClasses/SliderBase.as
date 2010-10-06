@@ -18,6 +18,10 @@ package com.patrickmowrer.components.supportClasses
     import spark.components.Button;
     import spark.components.SkinnableContainer;
     
+    [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
+    
+    [Style(name="liveDragging", type="Boolean", inherit="no")]
+    
     public class SliderBase extends SkinnableContainer implements ValueBounding, ValueSnapping
     {
         [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.Thumb")]
@@ -44,7 +48,9 @@ package com.patrickmowrer.components.supportClasses
         private var allowOverlapChanged:Boolean = false;
         private var snapIntervalChanged:Boolean = false;
         private var thumbValueChanged:Boolean = false;
+        
         private var animating:Boolean = false;
+        private var draggingThumb:Boolean = false;
         
         private var thumbs:Vector.<Thumb>;
         private var animatedThumb:Thumb;
@@ -119,6 +125,7 @@ package com.patrickmowrer.components.supportClasses
         }
 
         [Bindable(event = "valueCommit")]
+        [Bindable(event = "change")]
         public function get values():Array
         {
             if(valuesChanged)
@@ -175,9 +182,12 @@ package com.patrickmowrer.components.supportClasses
             if(partName == "thumb")
             {
                 var thumb:Thumb = Thumb(instance);
+                var slideDuration:Number = getStyle("slideDuration");
+               
+                thumb.setStyle("slideDuration", slideDuration);
                 
                 thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                thumb.addEventListener(ThumbEvent.DRAG, thumbDragHandler);
+                thumb.addEventListener(ThumbEvent.BEGIN_DRAG, thumbBeginDragHandler);
                 thumb.addEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
             }
             else if(partName == "track")
@@ -197,7 +207,7 @@ package com.patrickmowrer.components.supportClasses
                 var thumb:Thumb = Thumb(instance);
                 
                 thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                thumb.removeEventListener(ThumbEvent.DRAG, thumbDragHandler);
+                thumb.removeEventListener(ThumbEvent.BEGIN_DRAG, thumbBeginDragHandler);
                 thumb.removeEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
             }
             else if(partName == "track")
@@ -243,7 +253,7 @@ package com.patrickmowrer.components.supportClasses
                 allowOverlapChanged = false;
             }
             
-            if(thumbValueChanged)
+            if(thumbValueChanged && !animating && !isDraggingThumbWithLiveDraggingDisabled)
             {
                 dispatchEvent(new Event(Event.CHANGE));
                 
@@ -323,11 +333,21 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        private function thumbDragHandler(event:ThumbEvent):void
+        private function thumbBeginDragHandler(event:ThumbEvent):void
         {
             if(animating)
                 animatedThumb.stopAnimation();
+           
+            var thumb:Thumb = Thumb(event.currentTarget);
             
+            thumb.addEventListener(ThumbEvent.DRAGGING, thumbDraggingHandler);
+            thumb.addEventListener(ThumbEvent.END_DRAG, thumbEndDragHandler);
+            
+            draggingThumb = true;
+        }
+        
+        private function thumbDraggingHandler(event:ThumbEvent):void
+        {
             var thumb:Thumb = Thumb(event.currentTarget);
             
             if(valueBasedLayout)
@@ -339,6 +359,18 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
+        private function thumbEndDragHandler(event:ThumbEvent):void
+        {
+            var thumb:Thumb = Thumb(event.currentTarget);
+            
+            thumb.removeEventListener(ThumbEvent.DRAGGING, thumbDraggingHandler);
+            thumb.removeEventListener(ThumbEvent.END_DRAG, thumbEndDragHandler);            
+
+            draggingThumb = false;
+            
+            invalidateThumbValues();
+        }
+        
         private function thumbValueCommitHandler(event:FlexEvent):void
         {
             if(!allowOverlap && numberOfThumbs > 1)
@@ -346,13 +378,26 @@ package com.patrickmowrer.components.supportClasses
                 constrainThumb(Thumb(event.currentTarget));
             }
             
+            if(!animating && !isDraggingThumbWithLiveDraggingDisabled)
+            {
+                invalidateThumbValues();
+            }
+            
+            contentGroup.invalidateDisplayList();
+        }
+        
+        private function invalidateThumbValues():void
+        {
             if(!thumbValueChanged)
             {
                 thumbValueChanged = true;
                 invalidateProperties();
-            }
-            
-            contentGroup.invalidateDisplayList();
+            }            
+        }
+        
+        private function get isDraggingThumbWithLiveDraggingDisabled():Boolean
+        {
+            return draggingThumb && !getStyle("liveDragging");    
         }
         
         private function constrainThumb(thumb:Thumb):void

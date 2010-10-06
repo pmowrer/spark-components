@@ -11,6 +11,7 @@
             import mx.binding.utils.BindingUtils;
             import mx.binding.utils.ChangeWatcher;
             import mx.core.IVisualElement;
+            import mx.core.UIComponent;
             import mx.events.FlexEvent;
             
             private var _slider:Object;    
@@ -32,6 +33,8 @@
                 BindingUtils.bindProperty(slider, "maximum", maxInput, "value");
                 BindingUtils.bindProperty(slider, "snapInterval", snapInput, "value");
                 
+                BindingUtils.bindSetter(updateValueDisplay, slider, valueField);
+                
                 slider.minimum = min;
                 slider.maximum = max;
                 slider.snapInterval = snap;
@@ -50,16 +53,24 @@
             {
                 addInputListeners();
                 
-                updateValueDisplay();
+                liveDraggingCheckbox.selected = (slider as UIComponent).getStyle("liveDragging");
+                liveDraggingCheckbox.addEventListener(Event.CHANGE, liveDraggingChangeHandler);
+                
+                //updateValueDisplay();
             }
             
             protected function addInputListeners():void
             {
                 minInput.addEventListener(Event.CHANGE, changeHandler);
                 maxInput.addEventListener(Event.CHANGE, changeHandler);
-                snapInput.addEventListener(Event.CHANGE, changeHandler);  
+                snapInput.addEventListener(Event.CHANGE, changeHandler);   
                 
-                (slider as IEventDispatcher).addEventListener(FlexEvent.UPDATE_COMPLETE, changeHandler);
+                (slider as IEventDispatcher).addEventListener(Event.CHANGE, changeHandler);
+            }
+            
+            protected function liveDraggingChangeHandler(event:Event):void
+            {
+                (slider as UIComponent).setStyle("liveDragging", liveDraggingCheckbox.selected);
             }
             
             protected function changeHandler(event:Event):void
@@ -73,10 +84,10 @@
                 maxInput.value = slider.maximum;
                 snapInput.value = slider.snapInterval;    
              
-                updateValueDisplay();
+                //updateValueDisplay();
             }
             
-            private function updateValueDisplay():void
+            private function updateValueDisplay(value:Object):void
             {
                 valueDisplay.text = "Value(s): " + slider[valueField];                
             }
@@ -103,7 +114,11 @@
         <s:VGroup>
             <s:Label text="Snap interval:" />
             <s:NumericStepper id="snapInput" value="1" maximum="100" />            
-        </s:VGroup>          
+        </s:VGroup>    
+        <s:VGroup>
+            <s:Label text="Live Dragging:" />
+            <s:CheckBox id="liveDraggingCheckbox" selected="true" />           
+        </s:VGroup>    
     </s:HGroup>      
     
     <s:Label id="valueDisplay" />

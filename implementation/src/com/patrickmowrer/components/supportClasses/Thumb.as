@@ -15,6 +15,8 @@ package com.patrickmowrer.components.supportClasses
     import spark.effects.animation.SimpleMotionPath;
     import spark.effects.easing.Sine;
     
+    [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
+    
     public class Thumb extends Button implements ValueCarrying, ValueBounding, ValueSnapping
     {
         private const DEFAULT_MINIMUM:Number = 0;
@@ -28,7 +30,7 @@ package com.patrickmowrer.components.supportClasses
         
         private var valueRange:ValueRange;
         private var clickOffsetFromCenter:Point;
-        private var animation:SimpleThumbAnimation;
+        private var animation:ThumbAnimation;
         
         public function Thumb()
         {
@@ -115,9 +117,10 @@ package com.patrickmowrer.components.supportClasses
         
         public function animateMovementTo(value:Number, endHandler:Function):void
         {
-            animation = new SimpleThumbAnimation(this);
+            var slideDuration:Number = getStyle("slideDuration");
             
-            animation.play(1000, valueRange.getNearestValidValueTo(value), endHandler);
+            animation = new SimpleThumbAnimation(this);
+            animation.play(slideDuration, valueRange.getNearestValidValueTo(value), endHandler);
         }
         
         public function stopAnimation():void
@@ -152,23 +155,22 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.addEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
             sandboxRoot.addEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler);  
             
-            var localClick:Point = globalToLocal(new Point(event.stageX, event.stageY));
+            var globalClick:Point = new Point(event.stageX, event.stageY);
+            var localClick:Point = globalToLocal(globalClick);
             var xOffsetFromCenter:Number = localClick.x - (getLayoutBoundsWidth() / 2);
             var yOffsetFromCenter:Number = localClick.y - (getLayoutBoundsHeight() / 2);
             
             clickOffsetFromCenter = new Point(xOffsetFromCenter, yOffsetFromCenter);
+            
+            dispatchThumbEvent(ThumbEvent.BEGIN_DRAG, globalClick);
         }
         
         private function systemMouseMoveHandler(event:MouseEvent):void
         {
             var mouseMovedTo:Point = 
                 new Point(event.stageX - clickOffsetFromCenter.x, event.stageY - clickOffsetFromCenter.y / 2);
-            
-            var thumbEvent:ThumbEvent = new ThumbEvent(ThumbEvent.DRAG);
-            thumbEvent.stageX = mouseMovedTo.x;
-            thumbEvent.stageY = mouseMovedTo.y;
-            
-            dispatchEvent(thumbEvent);
+          
+            dispatchThumbEvent(ThumbEvent.DRAGGING, mouseMovedTo);
         }
         
         private function systemMouseUpHandler(event:MouseEvent):void
@@ -180,6 +182,17 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.removeEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler); 
             
             clickOffsetFromCenter = null;
+            
+            dispatchThumbEvent(ThumbEvent.END_DRAG, new Point(event.stageX, event.stageY));
+        }
+        
+        private function dispatchThumbEvent(type:String, point:Point):void
+        {
+            var thumbEvent:ThumbEvent = new ThumbEvent(type);
+            thumbEvent.stageX = point.x;
+            thumbEvent.stageY = point.y;
+            
+            dispatchEvent(thumbEvent);            
         }
     }
 }

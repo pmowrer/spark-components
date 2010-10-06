@@ -23,13 +23,13 @@
     
     <local:SinglevalueSliderModifiers x="100" y="200">
         <local:slider>
-            <s:HSlider width="200" />            
+            <s:HSlider width="500" slideDuration="1000" />            
         </local:slider>
     </local:SinglevalueSliderModifiers>  
 
     <local:MultivalueSliderModifiers x="100" y="350">
         <local:slider>        
-            <ns:HSlider width="500" values="{[50, 100, 20]}" />
+            <ns:HSlider width="500" values="{[50, 100, 20]}" slideDuration="1000" />
         </local:slider>
     </local:MultivalueSliderModifiers> 
                    

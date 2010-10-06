@@ -66,7 +66,7 @@ package com.patrickmowrer.components.test
                 }));
         }
         
-        [Test(async)]
+        [Test]
         public function createsAThumbForEveryValueInValuesProperty():void
         {
             for(var index:int = 0; index < slider.numElements; index++)
@@ -74,6 +74,25 @@ package com.patrickmowrer.components.test
                 var thumb:Thumb = Thumb(slider.getElementAt(index));
                 
                 assertThat(thumb.value, equalTo(testValues[index]));
+            }
+        }
+        
+        [Test(async)]
+        public function slideDurationStyleIsPropagatedToThumbsOnCreation():void
+        {
+            slider.setStyle("slideDuration", 9999);
+            slider.values = [1];
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider).call(thumbSlideDurationVerification, slider);
+            
+            function thumbSlideDurationVerification(slider:SliderBase):void
+            {
+                for(var index:int = 0; index < slider.numElements; index++)
+                {
+                    var thumb:Thumb = Thumb(slider.getElementAt(index));
+                    
+                    assertThat(thumb.getStyle("slideDuration"), equalTo(9999));
+                }                
             }
         }
         
