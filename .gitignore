@@ -6,6 +6,7 @@
 *bin/
 *bin-debug/
 *html-template/
+dist/
 
 # FlexUnit-generated files
 *.FlexUnitSettings/
