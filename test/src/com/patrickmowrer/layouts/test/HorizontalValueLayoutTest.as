@@ -127,38 +127,6 @@ package com.patrickmowrer.layouts.test
             after(FlexEvent.UPDATE_COMPLETE).on(group)
                 .assert(value1, "x").equals(0);
         }
-        
-        [Test]
-        public function settingMaximumSmallerThanMinimumAdjustsFormerToLatter():void
-        {
-            layout.maximum = -20;
-            
-            assertThat(layout.maximum, equalTo(layout.minimum));
-        }
-        
-        [Test]
-        public function settingMinimumGreaterThanMaximumAdjustsFormerToLatter():void
-        {
-            layout.minimum = 120;
-            
-            assertThat(layout.minimum, equalTo(layout.maximum));
-        }
-
-        [Test(async)]
-        public function changeToMinimumPropertyInvalidatesTargetDisplayList():void
-        {
-            layout.minimum = 10;
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(group).pass();
-        }
-        
-        [Test(async)]
-        public function changeToMaximumPropertyInvalidatesTargetDisplayList():void
-        {
-            layout.maximum = 120;
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(group).pass();
-        }
     }
 }
 

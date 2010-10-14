@@ -1,7 +1,7 @@
 package com.patrickmowrer.components.supportClasses
 {
     import com.patrickmowrer.events.ThumbEvent;
-    import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
+    import com.patrickmowrer.layouts.supportClasses.ValueLayout;
     
     import flash.display.DisplayObject;
     import flash.events.Event;
@@ -294,9 +294,9 @@ package com.patrickmowrer.components.supportClasses
             thumbs.splice(0, thumbs.length);
         }
         
-        private function get valueBasedLayout():ValueBasedLayout
+        private function get valueBasedLayout():ValueLayout
         {
-            return (layout as ValueBasedLayout);
+            return (layout as ValueLayout);
         }
         
         private function get numberOfThumbs():int

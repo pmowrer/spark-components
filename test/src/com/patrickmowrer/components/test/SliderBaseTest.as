@@ -2,7 +2,7 @@ package com.patrickmowrer.components.test
 {
     import com.patrickmowrer.components.supportClasses.SliderBase;
     import com.patrickmowrer.components.supportClasses.Thumb;
-    import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
+    import com.patrickmowrer.layouts.supportClasses.ValueLayout;
     
     import flash.events.Event;
     
@@ -181,7 +181,7 @@ package com.patrickmowrer.components.test
 }
 
 import com.patrickmowrer.components.supportClasses.Thumb;
-import com.patrickmowrer.layouts.supportClasses.ValueBasedLayout;
+import com.patrickmowrer.layouts.supportClasses.ValueLayout;
 
 import mx.core.IFactory;
 
@@ -195,7 +195,7 @@ internal class ThumbFactory implements IFactory
     }
 }
 
-internal class ValueBasedLayoutDummy extends LayoutBase implements ValueBasedLayout
+internal class ValueBasedLayoutDummy extends LayoutBase implements ValueLayout
 {
     private var _min:Number;
     private var _max:Number;

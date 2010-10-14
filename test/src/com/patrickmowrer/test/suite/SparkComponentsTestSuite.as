@@ -5,7 +5,7 @@ package com.patrickmowrer.test.suite
     import com.patrickmowrer.components.test.ThumbConstraintTest;
     import com.patrickmowrer.components.test.ThumbPropertySettingTest;
     import com.patrickmowrer.components.test.ValueRangeTest;
-    import com.patrickmowrer.layouts.test.HorizontalValueLayoutDefaultsTest;
+    import com.patrickmowrer.layouts.test.ValueLayoutBaseDefaultsTest;
     import com.patrickmowrer.layouts.test.HorizontalValueLayoutTest;
     
     [Suite]
@@ -18,6 +18,6 @@ package com.patrickmowrer.test.suite
         public var test4:ThumbPropertySettingTest;
         public var test5:ValueRangeTest;
         public var test6:HorizontalValueLayoutTest;
-        public var test7:HorizontalValueLayoutDefaultsTest;
+        public var test7:ValueLayoutBaseDefaultsTest;
     }
 }

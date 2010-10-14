@@ -1,22 +1,20 @@
 package com.patrickmowrer.layouts.test
 {
-    import com.patrickmowrer.layouts.HorizontalValueLayout;
+    import com.patrickmowrer.layouts.supportClasses.ValueLayoutBase;
     
     import mx.events.FlexEvent;
     
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
-    
-    import org.morefluent.integrations.flexunit4.*;
-  
     import org.hamcrest.assertThat;
     import org.hamcrest.object.equalTo;
+    import org.morefluent.integrations.flexunit4.*;
     
     import spark.components.supportClasses.GroupBase;
 
-    public class HorizontalValueLayoutDefaultsTest
+    public class ValueLayoutBaseDefaultsTest
     {		
-        private var layout:HorizontalValueLayout;
+        private var layout:ValueLayoutBase;
         private var group:GroupBase;
         
         [Rule]
@@ -25,7 +23,7 @@ package com.patrickmowrer.layouts.test
         [Before(async, ui)]
         public function setUp():void
         {
-            layout = new HorizontalValueLayout();
+            layout = new ValueLayoutBase();
             layout.minimum = 0;
             layout.maximum = 100;
             
