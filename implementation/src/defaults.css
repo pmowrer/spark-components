@@ -5,3 +5,8 @@ patrickmowrer|HSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.HSliderSkin");
 }
+
+patrickmowrer|VSlider
+{
+    skinClass: ClassReference("com.patrickmowrer.skins.VSliderSkin");
+}

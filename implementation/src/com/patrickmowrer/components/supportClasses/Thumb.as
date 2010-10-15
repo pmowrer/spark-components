@@ -168,7 +168,7 @@ package com.patrickmowrer.components.supportClasses
         private function systemMouseMoveHandler(event:MouseEvent):void
         {
             var mouseMovedTo:Point = 
-                new Point(event.stageX - clickOffsetFromCenter.x, event.stageY - clickOffsetFromCenter.y / 2);
+                new Point(event.stageX - clickOffsetFromCenter.x, event.stageY - clickOffsetFromCenter.y);
           
             dispatchThumbEvent(ThumbEvent.DRAGGING, mouseMovedTo);
         }

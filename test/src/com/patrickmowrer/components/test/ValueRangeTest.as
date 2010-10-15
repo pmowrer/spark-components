@@ -59,6 +59,16 @@ package com.patrickmowrer.components.test
         }      
         
         [Test]
+        public function calculatesFractionOfTheWholeRangeThatAValueRepresents():void
+        {
+            valueRange.minimum = 0;
+            valueRange.maximum = 1;
+            valueRange.snapInterval = 0;
+            
+            assertThat(valueRange.getNearestValidFractionOfRange(0.4523), equalTo(0.4523));
+        }
+        
+        [Test]
         public function roundsValueToNearestLesserSnapIntervalValue():void
         {
             valueRange.minimum = -3;

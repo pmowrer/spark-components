@@ -18,6 +18,7 @@
     <classEntry path="com.patrickmowrer.components.supportClasses.AnimationTarget"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ThumbAnimation"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.SimpleThumbAnimation"/>
+    <classEntry path="com.patrickmowrer.layouts.VerticalValueLayout"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

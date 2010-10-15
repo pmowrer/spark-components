@@ -32,5 +32,11 @@
             <ns:HSlider width="500" values="{[50, 100, 20]}" slideDuration="1000" />
         </local:slider>
     </local:MultivalueSliderModifiers> 
+    
+    <local:MultivalueSliderModifiers x="100" y="500">
+        <local:slider>        
+            <ns:VSlider height="100" values="{[50, 100, 20]}" slideDuration="1000" />
+        </local:slider>
+    </local:MultivalueSliderModifiers> 
                    
 </s:Application>
