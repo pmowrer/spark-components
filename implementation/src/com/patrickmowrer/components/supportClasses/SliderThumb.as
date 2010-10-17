@@ -31,10 +31,10 @@ package com.patrickmowrer.components.supportClasses
         [SkinPart(required="false")]
         public var button:Button;
         
-        [SkinPart(required="true", type="spark.components.DataRenderer")]
+        [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.DataRenderer")]
         public var dataTip:IFactory;
         
-        private var dataTipInstance:IDataRenderer;
+        private var dataTipInstance:DataRenderer;
         
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;
@@ -155,6 +155,13 @@ package com.patrickmowrer.components.supportClasses
             {
                 button.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
             }
+            else if(partName == "dataTip")
+            {
+                systemManager.toolTipChildren.addChild(DisplayObject(instance));
+                addEventListener(MoveEvent.MOVE, moveHandler);
+                dataTipInstance = DataRenderer(instance);
+                updateDataTip();
+            }
         }
         
         override protected function partRemoved(partName:String, instance:Object):void
@@ -162,6 +169,12 @@ package com.patrickmowrer.components.supportClasses
             if(partName == "button")
             {
                 button.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+            }
+            else if(partName == "dataTip")
+            {
+                systemManager.toolTipChildren.removeChild(DisplayObject(instance));
+                removeEventListener(MoveEvent.MOVE, moveHandler);
+                dataTipInstance = null;
             }
         }
         
@@ -199,12 +212,7 @@ package com.patrickmowrer.components.supportClasses
             dispatchThumbEvent(ThumbEvent.BEGIN_DRAG, globalClick);     
             
             if(dataTip)
-            {
-                dataTipInstance = IDataRenderer(createDynamicPartInstance("dataTip"));
-                systemManager.toolTipChildren.addChild(DisplayObject(dataTipInstance));
-                updateDataTip();
-                addEventListener(MoveEvent.MOVE, moveHandler);
-            }
+                createDynamicPartInstance("dataTip");
         }
         
         private function systemMouseMoveHandler(event:MouseEvent):void
@@ -228,12 +236,7 @@ package com.patrickmowrer.components.supportClasses
             dispatchThumbEvent(ThumbEvent.END_DRAG, new Point(event.stageX, event.stageY));
             
             if(dataTip)
-            {
                 removeDynamicPartInstance("dataTip", dataTipInstance);
-                systemManager.toolTipChildren.removeChild(DisplayObject(dataTipInstance));
-                dataTipInstance = null;
-                removeEventListener(MoveEvent.MOVE, moveHandler);
-            }
         }
         
         private function dispatchThumbEvent(type:String, point:Point):void
@@ -253,29 +256,10 @@ package com.patrickmowrer.components.supportClasses
         
         private function updateDataTip():void
         {
-            var dataTipAsUIComponent:UIComponent = dataTipInstance as UIComponent;
+            var dataTipPosition:Point = parent.localToGlobal(getCenterPointCoordinatesOf(this));
+            dataTipPosition.offset(getStyle("dataTipOffsetX"), getStyle("dataTipOffsetY"));
             
-            if(dataTipAsUIComponent)
-            {
-                // Force the dataTip to render to calculate proper offset
-                dataTipAsUIComponent.validateNow();
-                dataTipAsUIComponent.setActualSize(dataTipAsUIComponent.getExplicitOrMeasuredWidth(),
-                    dataTipAsUIComponent.getExplicitOrMeasuredHeight());
-            
-                var thumbCenter:Point = getCenterPointCoordinatesOf(this);
-                            
-                var dataTipPosition:Point = parent.localToGlobal(new Point(thumbCenter.x, thumbCenter.y));
-                
-                dataTipPosition.offset(-dataTipAsUIComponent.getExplicitOrMeasuredWidth() / 2, 
-                    -dataTipAsUIComponent.getExplicitOrMeasuredHeight() / 2);
-                
-                trace(getStyle("dataTipOffsetX"), getStyle("dataTipOffsetY"));
-                
-                dataTipPosition.offset(getStyle("dataTipOffsetX"), getStyle("dataTipOffsetY"));
-                            
-                dataTipAsUIComponent.setLayoutBoundsPosition(dataTipPosition.x, dataTipPosition.y);
-            }
-            
+            dataTipInstance.setLayoutBoundsPosition(dataTipPosition.x, dataTipPosition.y);
             dataTipInstance.data = value;
         }
         
