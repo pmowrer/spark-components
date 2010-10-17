@@ -10,3 +10,9 @@ patrickmowrer|VSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.VSliderSkin");
 }
+
+patrickmowrer|SliderThumb
+{
+    data-tip-offset-x: 0;
+    data-tip-offset-y: 0;
+}

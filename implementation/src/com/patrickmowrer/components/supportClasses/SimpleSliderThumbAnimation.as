@@ -5,15 +5,15 @@ package com.patrickmowrer.components.supportClasses
     import spark.effects.animation.SimpleMotionPath;
     import spark.effects.easing.Sine;
 
-    public class SimpleThumbAnimation implements ThumbAnimation
+    public class SimpleSliderThumbAnimation implements SliderThumbAnimation
     {
         private var animation:Animation;
-        private var thumb:Thumb;
+        private var thumb:SliderThumb;
         private var endValue:Number;
         private var afterHandler:Function;
         private var originalSnapInterval:Number;
         
-        public function SimpleThumbAnimation(thumb:Thumb)
+        public function SimpleSliderThumbAnimation(thumb:SliderThumb)
         {
             this.thumb = thumb;
   

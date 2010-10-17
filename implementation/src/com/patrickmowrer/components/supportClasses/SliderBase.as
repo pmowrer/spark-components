@@ -52,14 +52,14 @@ package com.patrickmowrer.components.supportClasses
         private var animating:Boolean = false;
         private var draggingThumb:Boolean = false;
         
-        private var thumbs:Vector.<Thumb>;
-        private var animatedThumb:Thumb;
+        private var thumbs:Vector.<SliderThumb>;
+        private var animatedThumb:SliderThumb;
         
         public function SliderBase()
         {
             super();
             
-            thumbs = new Vector.<Thumb>();
+            thumbs = new Vector.<SliderThumb>();
             
             if(!newMinimum)
                 minimum = DEFAULT_MINIMUM;
@@ -181,7 +181,7 @@ package com.patrickmowrer.components.supportClasses
             
             if(partName == "thumb")
             {
-                var thumb:Thumb = Thumb(instance);
+                var thumb:SliderThumb = SliderThumb(instance);
                 var slideDuration:Number = getStyle("slideDuration");
                
                 thumb.setStyle("slideDuration", slideDuration);
@@ -204,7 +204,7 @@ package com.patrickmowrer.components.supportClasses
             
             if(partName == "thumb")
             {
-                var thumb:Thumb = Thumb(instance);
+                var thumb:SliderThumb = SliderThumb(instance);
                 
                 thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
                 thumb.removeEventListener(ThumbEvent.BEGIN_DRAG, thumbBeginDragHandler);
@@ -265,12 +265,12 @@ package com.patrickmowrer.components.supportClasses
         {   
             for(var index:int = 0; index < values.length; index++)
             {
-                var thumb:Thumb = Thumb(createDynamicPartInstance("thumb"));
+                var thumb:SliderThumb = SliderThumb(createDynamicPartInstance("thumb"));
                 
                 if(!thumb)
                 {
                     throw new ArgumentError("Thumb part must be of type " +
-                        getQualifiedClassName(Thumb));
+                        getQualifiedClassName(SliderThumb));
                 }
                 
                 thumb.minimum = minimum;
@@ -304,12 +304,12 @@ package com.patrickmowrer.components.supportClasses
             return thumbs.length;
         }
         
-        private function getThumbAt(index:int):Thumb
+        private function getThumbAt(index:int):SliderThumb
         {
             return thumbs[index];
         }
         
-        private function getIndexOf(thumb:Thumb):int
+        private function getIndexOf(thumb:SliderThumb):int
         {
             return thumbs.indexOf(thumb);
         }
@@ -338,7 +338,7 @@ package com.patrickmowrer.components.supportClasses
             if(animating)
                 animatedThumb.stopAnimation();
            
-            var thumb:Thumb = Thumb(event.currentTarget);
+            var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
             thumb.addEventListener(ThumbEvent.DRAGGING, thumbDraggingHandler);
             thumb.addEventListener(ThumbEvent.END_DRAG, thumbEndDragHandler);
@@ -348,7 +348,7 @@ package com.patrickmowrer.components.supportClasses
         
         private function thumbDraggingHandler(event:ThumbEvent):void
         {
-            var thumb:Thumb = Thumb(event.currentTarget);
+            var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
             if(valueBasedLayout)
             {
@@ -361,7 +361,7 @@ package com.patrickmowrer.components.supportClasses
         
         private function thumbEndDragHandler(event:ThumbEvent):void
         {
-            var thumb:Thumb = Thumb(event.currentTarget);
+            var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
             thumb.removeEventListener(ThumbEvent.DRAGGING, thumbDraggingHandler);
             thumb.removeEventListener(ThumbEvent.END_DRAG, thumbEndDragHandler);            
@@ -375,7 +375,7 @@ package com.patrickmowrer.components.supportClasses
         {
             if(!allowOverlap && numberOfThumbs > 1)
             {
-                constrainThumb(Thumb(event.currentTarget));
+                constrainThumb(SliderThumb(event.currentTarget));
             }
             
             if(!animating && !isDraggingThumbWithLiveDraggingDisabled)
@@ -400,7 +400,7 @@ package com.patrickmowrer.components.supportClasses
             return draggingThumb && !getStyle("liveDragging");    
         }
         
-        private function constrainThumb(thumb:Thumb):void
+        private function constrainThumb(thumb:SliderThumb):void
         {
             var thumbIndex:int = getIndexOf(thumb);
             
@@ -418,7 +418,7 @@ package com.patrickmowrer.components.supportClasses
                 var trackRelative:Point = track.globalToLocal(new Point(event.stageX, event.stageY));
                 var trackClickValue:Number 
                     = valueBasedLayout.pointToValue(trackRelative.x, trackRelative.y);
-                var nearestThumb:Thumb = nearestThumbTo(trackClickValue);
+                var nearestThumb:SliderThumb = nearestThumbTo(trackClickValue);
                 
                 if(true)
                 {
@@ -431,14 +431,14 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        private function nearestThumbTo(value:Number):Thumb
+        private function nearestThumbTo(value:Number):SliderThumb
         {           
             var nearestValue:Number = valueBasedLayout.maximum;
-            var nearestThumb:Thumb;
+            var nearestThumb:SliderThumb;
             
             for(var index:int = 0; index < numberOfThumbs; index++)
             {
-                var thumb:Thumb = getThumbAt(index);
+                var thumb:SliderThumb = getThumbAt(index);
                 var valueDelta:Number = Math.abs(thumb.value - value);
                 
                 var valueInRange:Boolean 
@@ -454,7 +454,7 @@ package com.patrickmowrer.components.supportClasses
             return nearestThumb;
         }
         
-        private function beginThumbAnimation(thumb:Thumb, value:Number):void
+        private function beginThumbAnimation(thumb:SliderThumb, value:Number):void
         {
             if(animating)
                 animatedThumb.stopAnimation();

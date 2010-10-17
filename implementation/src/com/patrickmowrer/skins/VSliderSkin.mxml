@@ -19,7 +19,8 @@
     
     <fx:Declarations>
         <fx:Component id="thumb">
-            <supportClasses:Thumb skinClass="mx.skins.spark.SliderThumbSkin" />
+            <supportClasses:SliderThumb skinClass="com.patrickmowrer.skins.SliderThumbSkin" 
+                dataTipOffsetX="-35" />
         </fx:Component>
     </fx:Declarations>
     

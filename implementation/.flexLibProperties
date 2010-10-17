@@ -8,7 +8,6 @@
     <classEntry path="com.patrickmowrer.layouts.HorizontalValueLayout"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueCarrying"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueBounding"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.Thumb"/>
     <classEntry path="com.patrickmowrer.layouts.supportClasses.ValueLayout"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.SliderBase"/>
     <classEntry path="com.patrickmowrer.components.HSlider"/>
@@ -16,9 +15,10 @@
     <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueRange"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.AnimationTarget"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.ThumbAnimation"/>
-    <classEntry path="com.patrickmowrer.components.supportClasses.SimpleThumbAnimation"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.SliderThumbAnimation"/>
+    <classEntry path="com.patrickmowrer.components.supportClasses.SimpleSliderThumbAnimation"/>
     <classEntry path="com.patrickmowrer.layouts.VerticalValueLayout"/>
+    <classEntry path="com.patrickmowrer.skins.SliderThumbSkin"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

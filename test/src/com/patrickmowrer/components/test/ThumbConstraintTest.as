@@ -1,6 +1,6 @@
 package com.patrickmowrer.components.test
 {
-    import com.patrickmowrer.components.supportClasses.Thumb;
+    import com.patrickmowrer.components.supportClasses.SliderThumb;
     
     import mx.events.FlexEvent;
     
@@ -14,14 +14,14 @@ package com.patrickmowrer.components.test
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule(); 
         
-        private var thumb1:Thumb;
-        private var thumb2:Thumb;
+        private var thumb1:SliderThumb;
+        private var thumb2:SliderThumb;
         
         [Before(async, ui)]
         public function setUp():void
         {
-            thumb1 = new Thumb();
-            thumb2 = new Thumb();
+            thumb1 = new SliderThumb();
+            thumb2 = new SliderThumb();
             
             UIImpersonator.addChild(thumb1);
             UIImpersonator.addChild(thumb2);

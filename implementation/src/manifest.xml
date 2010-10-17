@@ -2,4 +2,5 @@
 <componentPackage>
     <component id="HSlider" class="com.patrickmowrer.components.HSlider"/>
     <component id="VSlider" class="com.patrickmowrer.components.VSlider"/>
+    <component id="SliderThumb" class="com.patrickmowrer.components.supportClasses.SliderThumb"/>
 </componentPackage>

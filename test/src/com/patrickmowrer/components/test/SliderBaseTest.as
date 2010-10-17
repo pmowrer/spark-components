@@ -1,7 +1,7 @@
 package com.patrickmowrer.components.test
 {
     import com.patrickmowrer.components.supportClasses.SliderBase;
-    import com.patrickmowrer.components.supportClasses.Thumb;
+    import com.patrickmowrer.components.supportClasses.SliderThumb;
     import com.patrickmowrer.layouts.supportClasses.ValueLayout;
     
     import flash.events.Event;
@@ -71,7 +71,7 @@ package com.patrickmowrer.components.test
         {
             for(var index:int = 0; index < slider.numElements; index++)
             {
-                var thumb:Thumb = Thumb(slider.getElementAt(index));
+                var thumb:SliderThumb = SliderThumb(slider.getElementAt(index));
                 
                 assertThat(thumb.value, equalTo(testValues[index]));
             }
@@ -89,7 +89,7 @@ package com.patrickmowrer.components.test
             {
                 for(var index:int = 0; index < slider.numElements; index++)
                 {
-                    var thumb:Thumb = Thumb(slider.getElementAt(index));
+                    var thumb:SliderThumb = SliderThumb(slider.getElementAt(index));
                     
                     assertThat(thumb.getStyle("slideDuration"), equalTo(9999));
                 }                
@@ -118,7 +118,7 @@ package com.patrickmowrer.components.test
         [Test(async)]
         public function dispatchesChangeEventWhenThumbValueChanges():void
         {
-            var thumb:Thumb = Thumb(slider.getElementAt(0));
+            var thumb:SliderThumb = SliderThumb(slider.getElementAt(0));
             thumb.value = 55;
             
             after(FlexEvent.UPDATE_COMPLETE).on(slider).pass();
@@ -180,7 +180,7 @@ package com.patrickmowrer.components.test
     }
 }
 
-import com.patrickmowrer.components.supportClasses.Thumb;
+import com.patrickmowrer.components.supportClasses.SliderThumb;
 import com.patrickmowrer.layouts.supportClasses.ValueLayout;
 
 import mx.core.IFactory;
@@ -191,7 +191,7 @@ internal class ThumbFactory implements IFactory
 {
     public function newInstance():*
     {
-        return new Thumb();
+        return new SliderThumb();
     }
 }
 

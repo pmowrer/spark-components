@@ -1,6 +1,6 @@
 package com.patrickmowrer.components.test
 {
-    import com.patrickmowrer.components.supportClasses.Thumb;
+    import com.patrickmowrer.components.supportClasses.SliderThumb;
     
     import mx.events.FlexEvent;
     
@@ -15,7 +15,7 @@ package com.patrickmowrer.components.test
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule(); 
         
-        private var thumb:Thumb;
+        private var thumb:SliderThumb;
         
         private const DEFAULT_VALUE:Number = 0;
         private const DEFAULT_MIN:Number = 0;
@@ -29,7 +29,7 @@ package com.patrickmowrer.components.test
         [Before(async, ui)]
         public function setUp():void
         {
-            thumb = new Thumb();
+            thumb = new SliderThumb();
             
             UIImpersonator.addChild(thumb);
             

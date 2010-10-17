@@ -7,18 +7,35 @@ package com.patrickmowrer.components.supportClasses
     import flash.events.MouseEvent;
     import flash.geom.Point;
     
+    import mx.core.IDataRenderer;
+    import mx.core.IFactory;
+    import mx.core.IVisualElement;
+    import mx.core.UIComponent;
     import mx.events.FlexEvent;
+    import mx.events.MoveEvent;
     import mx.events.SandboxMouseEvent;
     
     import spark.components.Button;
+    import spark.components.DataRenderer;
+    import spark.components.SkinnableContainer;
     import spark.effects.animation.MotionPath;
     import spark.effects.animation.SimpleMotionPath;
     import spark.effects.easing.Sine;
     
     [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
+    [Style(name="dataTipOffsetX", type="Number", format="Length", inherit="no")]
+    [Style(name="dataTipOffsetY", type="Number", format="Length", inherit="no")]
     
-    public class Thumb extends Button implements ValueCarrying, ValueBounding, ValueSnapping
+    public class SliderThumb extends SkinnableContainer implements ValueCarrying, ValueBounding, ValueSnapping
     {
+        [SkinPart(required="false")]
+        public var button:Button;
+        
+        [SkinPart(required="true", type="spark.components.DataRenderer")]
+        public var dataTip:IFactory;
+        
+        private var dataTipInstance:IDataRenderer;
+        
         private const DEFAULT_MINIMUM:Number = 0;
         private const DEFAULT_MAXIMUM:Number = 100;
         private const DEFAULT_SNAP_INTERVAL:Number = 1;
@@ -30,15 +47,13 @@ package com.patrickmowrer.components.supportClasses
         
         private var valueRange:ValueRange;
         private var clickOffsetFromCenter:Point;
-        private var animation:ThumbAnimation;
+        private var animation:SliderThumbAnimation;
         
-        public function Thumb()
+        public function SliderThumb()
         {
             super();
             
             valueRange = new ValueRange(DEFAULT_MINIMUM, DEFAULT_MAXIMUM, DEFAULT_SNAP_INTERVAL);
-
-            addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true);
         }
         
         public function get minimum():Number
@@ -101,14 +116,14 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        public function constrainMinimumTo(thumb:Thumb):void
+        public function constrainMinimumTo(thumb:SliderThumb):void
         {
             var nearestGreaterInterval:Number = valueRange.roundToNearestGreaterInterval(thumb.value);
             
             minimum = nearestGreaterInterval;
         }
         
-        public function constrainMaximumTo(thumb:Thumb):void
+        public function constrainMaximumTo(thumb:SliderThumb):void
         {
             var nearestLesserInterval:Number = valueRange.roundToNearestLesserInterval(thumb.value);
             
@@ -119,15 +134,34 @@ package com.patrickmowrer.components.supportClasses
         {
             var slideDuration:Number = getStyle("slideDuration");
             
-            animation = new SimpleThumbAnimation(this);
+            animation = new SimpleSliderThumbAnimation(this);
             animation.play(slideDuration, valueRange.getNearestValidValueTo(value), endHandler);
         }
         
         public function stopAnimation():void
         {
-            if(animation.isPlaying())
-            {
+            if(animationIsPlaying)
                 animation.stop();
+        }
+        
+        private function get animationIsPlaying():Boolean
+        {
+            return animation && animation.isPlaying();
+        }
+        
+        override protected function partAdded(partName:String, instance:Object):void
+        {
+            if(partName == "button")
+            {
+                button.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+            }
+        }
+        
+        override protected function partRemoved(partName:String, instance:Object):void
+        {
+            if(partName == "button")
+            {
+                button.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
             }
         }
         
@@ -140,7 +174,7 @@ package com.patrickmowrer.components.supportClasses
             if(newValue != _value)
             {
                 _value = newValue;
-                
+                                
                 dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
             }
             
@@ -162,7 +196,15 @@ package com.patrickmowrer.components.supportClasses
             
             clickOffsetFromCenter = new Point(xOffsetFromCenter, yOffsetFromCenter);
             
-            dispatchThumbEvent(ThumbEvent.BEGIN_DRAG, globalClick);
+            dispatchThumbEvent(ThumbEvent.BEGIN_DRAG, globalClick);     
+            
+            if(dataTip)
+            {
+                dataTipInstance = IDataRenderer(createDynamicPartInstance("dataTip"));
+                systemManager.toolTipChildren.addChild(DisplayObject(dataTipInstance));
+                updateDataTip();
+                addEventListener(MoveEvent.MOVE, moveHandler);
+            }
         }
         
         private function systemMouseMoveHandler(event:MouseEvent):void
@@ -184,6 +226,14 @@ package com.patrickmowrer.components.supportClasses
             clickOffsetFromCenter = null;
             
             dispatchThumbEvent(ThumbEvent.END_DRAG, new Point(event.stageX, event.stageY));
+            
+            if(dataTip)
+            {
+                removeDynamicPartInstance("dataTip", dataTipInstance);
+                systemManager.toolTipChildren.removeChild(DisplayObject(dataTipInstance));
+                dataTipInstance = null;
+                removeEventListener(MoveEvent.MOVE, moveHandler);
+            }
         }
         
         private function dispatchThumbEvent(type:String, point:Point):void
@@ -193,6 +243,48 @@ package com.patrickmowrer.components.supportClasses
             thumbEvent.stageY = point.y;
             
             dispatchEvent(thumbEvent);            
+        }
+        
+        private function moveHandler(event:MoveEvent):void
+        {
+            if(dataTipInstance && !animationIsPlaying)
+                updateDataTip();
+        }
+        
+        private function updateDataTip():void
+        {
+            var dataTipAsUIComponent:UIComponent = dataTipInstance as UIComponent;
+            
+            if(dataTipAsUIComponent)
+            {
+                // Force the dataTip to render to calculate proper offset
+                dataTipAsUIComponent.validateNow();
+                dataTipAsUIComponent.setActualSize(dataTipAsUIComponent.getExplicitOrMeasuredWidth(),
+                    dataTipAsUIComponent.getExplicitOrMeasuredHeight());
+            
+                var thumbCenter:Point = getCenterPointCoordinatesOf(this);
+                            
+                var dataTipPosition:Point = parent.localToGlobal(new Point(thumbCenter.x, thumbCenter.y));
+                
+                dataTipPosition.offset(-dataTipAsUIComponent.getExplicitOrMeasuredWidth() / 2, 
+                    -dataTipAsUIComponent.getExplicitOrMeasuredHeight() / 2);
+                
+                trace(getStyle("dataTipOffsetX"), getStyle("dataTipOffsetY"));
+                
+                dataTipPosition.offset(getStyle("dataTipOffsetX"), getStyle("dataTipOffsetY"));
+                            
+                dataTipAsUIComponent.setLayoutBoundsPosition(dataTipPosition.x, dataTipPosition.y);
+            }
+            
+            dataTipInstance.data = value;
+        }
+        
+        private function getCenterPointCoordinatesOf(component:UIComponent):Point
+        {
+            var x:Number = component.getLayoutBoundsX() + (component.getLayoutBoundsWidth() / 2);
+            var y:Number = component.getLayoutBoundsY() + (component.getLayoutBoundsHeight() / 2);
+            
+            return new Point(x, y);
         }
     }
 }
