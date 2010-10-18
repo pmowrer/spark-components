@@ -18,14 +18,17 @@ package com.patrickmowrer.layouts
             super();
         }
         
-        override public function pointToValue(x:Number, y:Number):Number
+        override public function pointToValue(point:Point, relativeTo:IVisualElement = null):Number
         {
             if(!target)
                 return 0;
             
-            var fractionOfTotalWidth:Number = x / target.getLayoutBoundsWidth();
+            var elementWidth:Number = relativeTo != null ? relativeTo.width : 0;
+            var availableWidth:Number = target.getLayoutBoundsWidth() - elementWidth;
+                        
+            var fractionOfAvailableWidth:Number = point.x / availableWidth;
             
-            return valueRange.getNearestValidValueFromFraction(fractionOfTotalWidth);
+            return valueRange.getNearestValidValueFromFraction(fractionOfAvailableWidth);
         }
         
         override public function updateDisplayList(width:Number, height:Number):void
@@ -40,12 +43,20 @@ package com.patrickmowrer.layouts
                 
                 if(element is ValueCarrying)
                 {
-                    var value:Number = ValueCarrying(element).value;
-                    var rangeFraction:Number = valueRange.getNearestValidFractionOfRange(value);
+                    var elementWidth:Number = getElementWidth(element);
+                    var availableWidth:Number = width - elementWidth;
+                    var x:Number = 0;
                     
-                    var x:Number = (width * rangeFraction) - (getElementWidth(element) / 2);
-                    var xMax:Number = width - getElementWidth(element);
-                    x = Math.min(x, xMax);
+                    if(elementWidth <= availableWidth)
+                    {
+                        var value:Number = ValueCarrying(element).value;
+                        var rangeFraction:Number = valueRange.getNearestValidFractionOfRange(value);
+                        
+                        x += (availableWidth * rangeFraction);
+                        x = Math.min(x, availableWidth);
+                    }
+                    else
+                        x = 0;
                     
                     element.setLayoutBoundsSize(NaN, NaN);
                     element.setLayoutBoundsPosition(x, 0);

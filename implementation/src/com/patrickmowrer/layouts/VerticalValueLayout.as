@@ -3,6 +3,8 @@ package com.patrickmowrer.layouts
     import com.patrickmowrer.components.supportClasses.ValueCarrying;
     import com.patrickmowrer.layouts.supportClasses.ValueLayoutBase;
     
+    import flash.geom.Point;
+    
     import mx.core.IVisualElement;
     
     public class VerticalValueLayout extends ValueLayoutBase
@@ -12,14 +14,17 @@ package com.patrickmowrer.layouts
             super();
         }
         
-        override public function pointToValue(x:Number, y:Number):Number
+        override public function pointToValue(point:Point, relativeTo:IVisualElement = null):Number
         {
             if(!target)
                 return 0;
             
-            var fractionOfTotalHeight:Number = 1 - (y / target.getLayoutBoundsHeight());
+            var elementHeight:Number = relativeTo != null ? relativeTo.height : 0;
+            var availableHeight:Number = target.getLayoutBoundsHeight() - elementHeight;
             
-            return valueRange.getNearestValidValueFromFraction(fractionOfTotalHeight);
+            var fractionOfAvailableHeight:Number = 1 - (point.y / availableHeight);
+            
+            return valueRange.getNearestValidValueFromFraction(fractionOfAvailableHeight);
         }
         
         override public function updateDisplayList(width:Number, height:Number):void
@@ -35,17 +40,19 @@ package com.patrickmowrer.layouts
                 if(element is ValueCarrying)
                 {
                     var elementHeight:Number = getElementHeight(element);
-                    var y:Number = height;
+                    var availableHeight:Number = height - elementHeight;
+                    var y:Number = availableHeight;
                     
-                    if(elementHeight <= height)
+                    if(elementHeight <= availableHeight)
                     {
                         var value:Number = ValueCarrying(element).value;
                         var rangeFraction:Number = valueRange.getNearestValidFractionOfRange(value);
-                        var yMax:Number = height - elementHeight;
                         
-                        y -= (height * rangeFraction) + (elementHeight / 2);
-                        y = Math.min(y, yMax);
+                        y -= (availableHeight * rangeFraction);
+                        y = Math.min(y, availableHeight);
                     }
+                    else
+                        y = 0;
                     
                     element.setLayoutBoundsSize(NaN, NaN);
                     element.setLayoutBoundsPosition(0, y);

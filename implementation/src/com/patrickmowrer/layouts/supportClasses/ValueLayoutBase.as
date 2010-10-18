@@ -8,6 +8,7 @@ package com.patrickmowrer.layouts.supportClasses
     import flash.display.DisplayObject;
     import flash.errors.IllegalOperationError;
     import flash.events.Event;
+    import flash.geom.Point;
     
     import mx.core.IVisualElement;
     
@@ -49,7 +50,7 @@ package com.patrickmowrer.layouts.supportClasses
             invalidateTargetDisplayList();
         }
         
-        public function pointToValue(x:Number, y:Number):Number
+        public function pointToValue(point:Point, relativeTo:IVisualElement = null):Number
         {
             throw new IllegalOperationError("pointToValue must be overriden in sub-class.");
         }

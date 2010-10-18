@@ -368,7 +368,7 @@ package com.patrickmowrer.components.supportClasses
                 var draggedTo:Point 
                     = contentGroup.globalToLocal(new Point(event.stageX, event.stageY));
                 
-                thumb.value = valueBasedLayout.pointToValue(draggedTo.x, draggedTo.y);
+                thumb.value = valueBasedLayout.pointToValue(draggedTo, thumb);
             }
         }
         
@@ -457,7 +457,7 @@ package com.patrickmowrer.components.supportClasses
             {
                 var trackRelative:Point = track.globalToLocal(new Point(event.stageX, event.stageY));
                 var trackClickValue:Number 
-                    = valueBasedLayout.pointToValue(trackRelative.x, trackRelative.y);
+                    = valueBasedLayout.pointToValue(trackRelative);
                 var nearestThumb:SliderThumb = nearestThumbTo(trackClickValue);
                 
                 if(getStyle("slideDuration") != 0)

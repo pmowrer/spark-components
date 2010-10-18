@@ -11,6 +11,6 @@ patrickmowrer|HSlider
 patrickmowrer|VSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.VSliderSkin");
-    data-tip-offset-x: -35; 
+    data-tip-offset-x: 35; 
     data-tip-offset-y: 0;
 }

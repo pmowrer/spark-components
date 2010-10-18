@@ -3,6 +3,7 @@ package com.patrickmowrer.layouts.test
     import com.patrickmowrer.layouts.VerticalValueLayout;
     
     import flash.events.Event;
+    import flash.geom.Point;
     
     import flexunit.framework.Test;
     
@@ -18,7 +19,7 @@ package com.patrickmowrer.layouts.test
     import org.morefluent.integrations.flexunit4.*;
     
     import spark.components.Group;
-
+ 
     [RunWith("org.flexunit.runners.Parameterized")]
     public class VerticalValueLayoutTest
     {		
@@ -52,7 +53,8 @@ package com.patrickmowrer.layouts.test
         }
         
         public static var positional:Array = [	[10, 0, 20, 0, 100, 50], 
-                                                [-12, -15, -5, 1, 100, 69.5], 
+                                                [10, 0, 10, 11, 100, 0], 
+                                                [-12, -15, -5, 1, 100, 69.3], 
                                                 [0.4523, 0, 1, 0.5522, 100, 54.45]  ];
         
         /** With the vertical layout, max and min are seemingly reversed because the max value is typically
@@ -83,7 +85,7 @@ package com.patrickmowrer.layouts.test
             group.addElement(element);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(element, "y").equals(10);
+                .assert(element, "y").equals(0);
         }
         
         public static var boundedByMax:Array = [	[100, 0, 20, 100, 0], 
@@ -124,19 +126,22 @@ package com.patrickmowrer.layouts.test
                 .assert(element, "y").equals(expected);
         }
         
-        public static var translate:Array = [	[10, 100, 0, 20, 18], 
-                                                [15,  100, -15, -5, -6.5], 
-                                                [48.3234287352537, 100, 20, 160, 92.34719977064482] ];
+        public static var translate:Array = [	[10, null, 100, 0, 20, 18], 
+                                                [15, 15, 100, -15, -5, -6.764705882352942], 
+                                                [48.3234287352537, 0, 100, 20, 160, 92.34719977064482] ];
         
         [Test(dataProvider="translate")]
         public function translatesContainerRelativeYCoordinateToValue
-            (y:Number, targetHeight:Number, min:Number, max:Number, expected:Number):void
+            (y:Number, elementHeight:Number, targetHeight:Number, min:Number, max:Number, expected:Number):void
         {   
+            var dummyElement:IVisualElement = new VisualElementWithValue(0);
+            dummyElement.height = elementHeight;
+            
             layout.minimum = min;
             layout.maximum = max;
             group.setLayoutBoundsSize(0, targetHeight);
             
-            assertThat(layout.pointToValue(0, y), equalTo(expected));
+            assertThat(layout.pointToValue(new Point(0, y), dummyElement), equalTo(expected));
         }
     }
 }

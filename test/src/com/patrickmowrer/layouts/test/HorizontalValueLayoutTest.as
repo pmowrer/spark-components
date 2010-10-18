@@ -3,14 +3,15 @@ package com.patrickmowrer.layouts.test
     import com.patrickmowrer.layouts.HorizontalValueLayout;
     
     import flash.events.Event;
+    import flash.geom.Point;
     
     import flexunit.framework.Test;
     
+    import mx.core.IVisualElement;
     import mx.events.FlexEvent;
     
     import org.flexunit.assertThat;
     import org.flexunit.rules.IMethodRule;
-
     import org.fluint.uiImpersonation.UIImpersonator;
     import org.hamcrest.object.equalTo;
     import org.hamcrest.object.hasProperty;
@@ -18,12 +19,14 @@ package com.patrickmowrer.layouts.test
     
     import spark.components.Group;
 
+    [RunWith("org.flexunit.runners.Parameterized")]
     public class HorizontalValueLayoutTest
     {		
         private const WIDTH:Number = 160;
         
         private var layout:HorizontalValueLayout;
         private var group:Group;
+        private var element:IVisualElement;
         
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule(); 
@@ -32,12 +35,9 @@ package com.patrickmowrer.layouts.test
         public function setUp():void
         {
             layout = new HorizontalValueLayout();
-            layout.minimum = 20;
-            layout.maximum = 100;
             
             group = new Group();
             group.layout = layout;
-            group.width = WIDTH;
             
             UIImpersonator.addChild(group);
             after(FlexEvent.UPDATE_COMPLETE).on(group).pass();
@@ -51,81 +51,96 @@ package com.patrickmowrer.layouts.test
             layout = null;
         }
         
-        [Test]
-        public function positionsElementsHorizontallyBasedOnValueProperty():void
-        {
-            var value1:VisualElementWithValue = new VisualElementWithValue(40);
-            var value2:VisualElementWithValue = new VisualElementWithValue(44);
-            var value3:VisualElementWithValue = new VisualElementWithValue(68);
-            
-            group.addElement(value1);
-            group.addElement(value2);
-            group.addElement(value3);
-                        
-            after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value1, "x").equals(40).and()
-                .assert(value2, "x").equals(48).and()
-                .assert(value3, "x").equals(96);
-        }
+        public static var positional:Array = [	[10, 0, 20, 0, 100, 50], 
+                                                [10, 0, 10, 11, 100, 89], 
+                                                [-12, -15, -5, 1, 100, 29.7], 
+                                                [0.4523, 0, 1, 1.52, 100, 44.5]  ];
         
-        [Test]
-        public function elementIsCenterPositionedOverValue():void
+        /** With the vertical layout, max and min are seemingly reversed because the max value is typically
+         *   represented with a lower-value y-coordinate than the min value. */
+        [Test(dataProvider="positional")]
+        public function positionsElementCenterHorizontallyWithRespectToItsValuePropertyInRelationToBounds
+            (value:Number, min:Number, max:Number, elementWidth:Number, targetWidth:Number, expected:Number):void
         {
-            var value:VisualElementWithValue = new VisualElementWithValue(40);
-            value.setLayoutBoundsSize(20, 0);
+            element = new VisualElementWithValue(value);
             
-            group.addElement(value);
+            layout.minimum = min;
+            layout.maximum = max;
+            element.setLayoutBoundsSize(elementWidth, 0);
+            group.width = targetWidth;
+            group.addElement(element);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value, "x").equals(30);
+                .assert(element, "x").equals(expected);
         }
         
         [Test]
-        public function positionsElementsWithNegativeValuesOnPositiveXCoordinate():void
+        public function positionsElementAt0WidthIfElementWidthIsGreaterThanContainerWidth():void
         {
-            var value1:VisualElementWithValue = new VisualElementWithValue(-5);
+            element = new VisualElementWithValue(40);
             
-            layout.minimum = -10;
-            group.width = 110;            
-            group.addElement(value1);
+            element.setLayoutBoundsSize(100, 0);
+            group.width = 10;
+            group.addElement(element);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value1, "x").equals(5);
+                .assert(element, "x").equals(0);
         }
         
-        [Test]
-        public function translatesXCoordinateToValueBasedOnTargetWidthAndMinMax():void
-        {            
-            assertThat(layout.pointToValue(48, 0), equalTo(44));
-        }
+        public static var boundedByMax:Array = [	[100, 0, 20, 123.45, 123.45], 
+                                                    [0, -15, -5, 0.95, 0.95], 
+                                                    [0.4523, 0, 0.1, 0.55, 0.55]  ];
         
-        [Test]
-        public function preservesFloatingPointXCoordinateInValue():void
-        {            
-            assertThat(layout.pointToValue(48.3234287352537, 0), equalTo(44.16171436762685));
-        }
-        
-        [Test]
-        public function elementPositionIsBoundedByMaximum():void
+        [Test(dataProvider="boundedByMax")]
+        public function elementPositionIsBoundedByMaximum
+            (value:Number, min:Number, max:Number, targetWidth:Number, expected:Number):void
         {
-            var value1:VisualElementWithValue = new VisualElementWithValue(153);
+            element = new VisualElementWithValue(value);
             
-            group.addElement(value1);
+            layout.minimum = min;
+            layout.maximum = max;
+            group.setLayoutBoundsSize(targetWidth, 0);
+            group.addElement(element);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value1, "x").equals(WIDTH);
+                .assert(element, "x").equals(expected);
         }
         
-        [Test]
-        public function elementPositionIsBoundedByMinimum():void
+        public static var boundedByMin:Array = [	[4.9, 5.0, 20, 1, 0], 
+                                                    [-15.1, -15, -5, 0.95, 0], 
+                                                    [0.4523, 0.55, 0.65, 1, 0]  ];
+        
+        [Test(dataProvider="boundedByMin")]
+        public function elementPositionIsBoundedByMinimum
+            (value:Number, min:Number, max:Number, targetWidth:Number, expected:Number):void
         {
-            var value1:VisualElementWithValue = new VisualElementWithValue(-40);
+            element = new VisualElementWithValue(value);
             
-            group.width = 150;
-            group.addElement(value1);
+            layout.minimum = min;
+            layout.maximum = max;
+            group.setLayoutBoundsSize(targetWidth, 0);
+            group.addElement(element);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(value1, "x").equals(0);
+                .assert(element, "x").equals(expected);
+        }
+        
+        public static var translate:Array = [	[10, null, 100, 0, 20, 2], 
+                                                [15, 15, 100, -15, -5, -13.235294117647058], 
+                                                [48.3234287352537, 0, 100, 20, 160, 87.65280022935518] ];
+        
+        [Test(dataProvider="translate")]
+        public function translatesContainerRelativeXCoordinateToValue
+            (x:Number, elementWidth:Number, targetWidth:Number, min:Number, max:Number, expected:Number):void
+        {   
+            var dummyElement:IVisualElement = new VisualElementWithValue(0);
+            dummyElement.width = elementWidth;
+            
+            layout.minimum = min;
+            layout.maximum = max;
+            group.setLayoutBoundsSize(targetWidth, 0);
+            
+            assertThat(layout.pointToValue(new Point(x, 0), dummyElement), equalTo(expected));
         }
     }
 }

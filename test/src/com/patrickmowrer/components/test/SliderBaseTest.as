@@ -206,11 +206,13 @@ import com.patrickmowrer.components.supportClasses.SliderThumb;
 import com.patrickmowrer.layouts.supportClasses.ValueLayout;
 import com.patrickmowrer.skins.SliderThumbSkin;
 
+import flash.geom.Point;
 import flash.net.registerClassAlias;
 import flash.utils.getDefinitionByName;
 import flash.utils.getQualifiedClassName;
 
 import mx.core.IFactory;
+import mx.core.IVisualElement;
 
 import spark.layouts.supportClasses.LayoutBase;
 
@@ -251,7 +253,7 @@ internal class ValueBasedLayoutDummy extends LayoutBase implements ValueLayout
         _max = value;
     }
     
-    public function pointToValue(x:Number, y:Number):Number
+    public function pointToValue(point:Point, relativeTo:IVisualElement = null):Number
     {
         return 0;
     }
