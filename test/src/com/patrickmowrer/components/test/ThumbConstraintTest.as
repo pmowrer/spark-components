@@ -1,12 +1,12 @@
 package com.patrickmowrer.components.test
 {
     import com.patrickmowrer.components.supportClasses.SliderThumb;
+    import com.patrickmowrer.skins.SliderThumbSkin;
     
     import mx.events.FlexEvent;
     
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
-
     import org.morefluent.integrations.flexunit4.*;
 
     public class ThumbConstraintTest
@@ -22,6 +22,9 @@ package com.patrickmowrer.components.test
         {
             thumb1 = new SliderThumb();
             thumb2 = new SliderThumb();
+            
+            thumb1.setStyle("skinClass", SliderThumbSkin);
+            thumb2.setStyle("skinClass", SliderThumbSkin);
             
             UIImpersonator.addChild(thumb1);
             UIImpersonator.addChild(thumb2);

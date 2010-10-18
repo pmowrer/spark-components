@@ -12,7 +12,7 @@
     <classEntry path="com.patrickmowrer.components.supportClasses.SliderBase"/>
     <classEntry path="com.patrickmowrer.components.HSlider"/>
     <classEntry path="com.patrickmowrer.skins.HSliderSkin"/>
-    <classEntry path="com.patrickmowrer.events.ThumbEvent"/>
+    <classEntry path="com.patrickmowrer.events.ThumbDragEvent"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.ValueRange"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.AnimationTarget"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.SliderThumbAnimation"/>

@@ -1,37 +1,45 @@
 package com.patrickmowrer.components.supportClasses
 {
-    import com.patrickmowrer.events.ThumbEvent;
+    import com.patrickmowrer.events.ThumbDragEvent;
+    import com.patrickmowrer.events.ThumbKeyEvent;
     
     import flash.display.DisplayObject;
     import flash.events.Event;
+    import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
+    import flash.ui.Keyboard;
     
     import mx.core.IDataRenderer;
     import mx.core.IFactory;
     import mx.core.IVisualElement;
     import mx.core.UIComponent;
+    import mx.core.mx_internal;
     import mx.events.FlexEvent;
     import mx.events.MoveEvent;
     import mx.events.SandboxMouseEvent;
+    import mx.managers.IFocusManagerComponent;
     
     import spark.components.Button;
     import spark.components.DataRenderer;
-    import spark.components.SkinnableContainer;
+    import spark.components.supportClasses.SkinnableComponent;
     import spark.effects.animation.MotionPath;
     import spark.effects.animation.SimpleMotionPath;
     import spark.effects.easing.Sine;
     
-    [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
-    [Style(name="dataTipOffsetX", type="Number", format="Length", inherit="no")]
-    [Style(name="dataTipOffsetY", type="Number", format="Length", inherit="no")]
+    use namespace mx_internal;
     
-    public class SliderThumb extends SkinnableContainer implements ValueCarrying, ValueBounding, ValueSnapping
+    [Style(name="focusAlpha", type="Number", inherit="no", theme="spark", minValue="0.0", maxValue="1.0")]
+    [Style(name="focusColor", type="uint", format="Color", inherit="yes", theme="spark")]
+    
+    [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
+    
+    public class SliderThumb extends SkinnableComponent implements ValueCarrying, ValueBounding, ValueSnapping, IFocusManagerComponent
     {
         [SkinPart(required="false")]
         public var button:Button;
         
-        [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.DataRenderer")]
+        [SkinPart(required="false", type="spark.components.DataRenderer")]
         public var dataTip:IFactory;
         
         private var dataTipInstance:DataRenderer;
@@ -194,6 +202,15 @@ package com.patrickmowrer.components.supportClasses
             valueChanged = false;
         }
 
+        override public function drawFocus(isFocused:Boolean):void
+        {
+            if(button)
+            {
+                button.drawFocusAnyway = true;
+                button.drawFocus(isFocused);
+            }
+        }
+        
         private function mouseDownHandler(event:MouseEvent):void
         {
             var sandboxRoot:DisplayObject = systemManager.getSandboxRoot();
@@ -209,7 +226,7 @@ package com.patrickmowrer.components.supportClasses
             
             clickOffsetFromCenter = new Point(xOffsetFromCenter, yOffsetFromCenter);
             
-            dispatchThumbEvent(ThumbEvent.BEGIN_DRAG, globalClick);     
+            dispatchThumbEvent(ThumbDragEvent.BEGIN_DRAG, globalClick);     
             
             if(dataTip)
                 createDynamicPartInstance("dataTip");
@@ -220,7 +237,7 @@ package com.patrickmowrer.components.supportClasses
             var mouseMovedTo:Point = 
                 new Point(event.stageX - clickOffsetFromCenter.x, event.stageY - clickOffsetFromCenter.y);
           
-            dispatchThumbEvent(ThumbEvent.DRAGGING, mouseMovedTo);
+            dispatchThumbEvent(ThumbDragEvent.DRAGGING, mouseMovedTo);
         }
         
         private function systemMouseUpHandler(event:MouseEvent):void
@@ -233,7 +250,7 @@ package com.patrickmowrer.components.supportClasses
             
             clickOffsetFromCenter = null;
             
-            dispatchThumbEvent(ThumbEvent.END_DRAG, new Point(event.stageX, event.stageY));
+            dispatchThumbEvent(ThumbDragEvent.END_DRAG, new Point(event.stageX, event.stageY));
             
             if(dataTip)
                 removeDynamicPartInstance("dataTip", dataTipInstance);
@@ -241,11 +258,7 @@ package com.patrickmowrer.components.supportClasses
         
         private function dispatchThumbEvent(type:String, point:Point):void
         {
-            var thumbEvent:ThumbEvent = new ThumbEvent(type);
-            thumbEvent.stageX = point.x;
-            thumbEvent.stageY = point.y;
-            
-            dispatchEvent(thumbEvent);            
+            dispatchEvent(new ThumbDragEvent(type, point.x, point.y));            
         }
         
         private function moveHandler(event:MoveEvent):void
@@ -269,6 +282,62 @@ package com.patrickmowrer.components.supportClasses
             var y:Number = component.getLayoutBoundsY() + (component.getLayoutBoundsHeight() / 2);
             
             return new Point(x, y);
+        }
+        
+        override protected function keyDownHandler(event:KeyboardEvent):void
+        {
+            super.keyDownHandler(event);
+            
+            if(event.isDefaultPrevented())
+                return;
+            
+            var newValue:Number;
+            var thumbKeyEvent:ThumbKeyEvent;
+
+            switch(event.keyCode)
+            {
+                case Keyboard.DOWN:
+                case Keyboard.LEFT:
+                {
+                    newValue = valueRange.getNearestValidValueTo(value - snapInterval);
+                    break;
+                }
+            
+                case Keyboard.UP:
+                case Keyboard.RIGHT:
+                {
+                    newValue = valueRange.getNearestValidValueTo(value + snapInterval);
+                    break;
+                }
+            }
+            
+            event.preventDefault();
+            
+            if(newValue)
+            {            
+                thumbKeyEvent = new ThumbKeyEvent(ThumbKeyEvent.KEY_DOWN, newValue);
+                dispatchEvent(thumbKeyEvent);
+            }
+        }
+        
+        override protected function keyUpHandler(event:KeyboardEvent):void
+        {
+            var thumbKeyEvent:ThumbKeyEvent;
+            
+            switch(event.keyCode)
+            {
+                case Keyboard.DOWN:
+                case Keyboard.LEFT:
+                case Keyboard.UP:
+                case Keyboard.RIGHT:
+                {
+                    thumbKeyEvent = new ThumbKeyEvent(ThumbKeyEvent.KEY_UP, value);
+                    dispatchEvent(thumbKeyEvent);
+                    
+                    event.preventDefault();
+                    break;
+                }
+            }
         }
     }
 }

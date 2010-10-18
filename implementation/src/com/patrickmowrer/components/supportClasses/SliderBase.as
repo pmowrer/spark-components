@@ -1,30 +1,36 @@
 package com.patrickmowrer.components.supportClasses
 {
-    import com.patrickmowrer.events.ThumbEvent;
+    import com.patrickmowrer.events.ThumbDragEvent;
+    import com.patrickmowrer.events.ThumbKeyEvent;
     import com.patrickmowrer.layouts.supportClasses.ValueLayout;
     
     import flash.display.DisplayObject;
     import flash.events.Event;
+    import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     import flash.ui.Mouse;
     import flash.utils.getQualifiedClassName;
     
+    import mx.controls.sliderClasses.Slider;
     import mx.core.IFactory;
     import mx.core.IVisualElement;
+    import mx.core.UIComponent;
     import mx.events.FlexEvent;
     import mx.events.SandboxMouseEvent;
+    import mx.managers.IFocusManagerComponent;
     
     import spark.components.Button;
     import spark.components.SkinnableContainer;
     
     [Style(name="slideDuration", type="Number", format="Time", inherit="no")]
-    
     [Style(name="liveDragging", type="Boolean", inherit="no")]
+    [Style(name="dataTipOffsetX", type="Number", format="Length", inherit="yes")]
+    [Style(name="dataTipOffsetY", type="Number", format="Length", inherit="yes")]
     
     public class SliderBase extends SkinnableContainer implements ValueBounding, ValueSnapping
     {
-        [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.Thumb")]
+        [SkinPart(required="false", type="com.patrickmowrer.components.supportClasses.SliderThumb")]
         public var thumb:IFactory;
         
         [SkinPart(required="false")]
@@ -51,8 +57,10 @@ package com.patrickmowrer.components.supportClasses
         
         private var animating:Boolean = false;
         private var draggingThumb:Boolean = false;
+        private var keyDownOnThumb:Boolean = false;
         
         private var thumbs:Vector.<SliderThumb>;
+        private var focusedThumbIndex:uint = 0;
         private var animatedThumb:SliderThumb;
         
         public function SliderBase()
@@ -187,14 +195,17 @@ package com.patrickmowrer.components.supportClasses
                 thumb.setStyle("slideDuration", slideDuration);
                 
                 thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                thumb.addEventListener(ThumbEvent.BEGIN_DRAG, thumbBeginDragHandler);
+                thumb.addEventListener(ThumbDragEvent.BEGIN_DRAG, thumbBeginDragHandler);
+                thumb.addEventListener(ThumbKeyEvent.KEY_DOWN, thumbKeyDownHandler);
                 thumb.addEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
+                
+                thumb.focusEnabled = true;
             }
             else if(partName == "track")
             {
-                var track:Button = Button(instance);
-                
                 track.addEventListener(MouseEvent.MOUSE_DOWN, trackMouseDownHandler);
+                
+                track.focusEnabled = false;
             }
         }
         
@@ -207,7 +218,8 @@ package com.patrickmowrer.components.supportClasses
                 var thumb:SliderThumb = SliderThumb(instance);
                 
                 thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                thumb.removeEventListener(ThumbEvent.BEGIN_DRAG, thumbBeginDragHandler);
+                thumb.removeEventListener(ThumbDragEvent.BEGIN_DRAG, thumbBeginDragHandler);
+                thumb.removeEventListener(ThumbKeyEvent.KEY_DOWN, thumbKeyDownHandler);
                 thumb.removeEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
             }
             else if(partName == "track")
@@ -217,7 +229,7 @@ package com.patrickmowrer.components.supportClasses
                 track.removeEventListener(MouseEvent.MOUSE_DOWN, trackMouseDownHandler);
             }
         }
-        
+    
         override protected function commitProperties():void
         {
             super.commitProperties();
@@ -333,20 +345,21 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        private function thumbBeginDragHandler(event:ThumbEvent):void
+        private function thumbBeginDragHandler(event:ThumbDragEvent):void
         {
             if(animating)
                 animatedThumb.stopAnimation();
            
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
-            thumb.addEventListener(ThumbEvent.DRAGGING, thumbDraggingHandler);
-            thumb.addEventListener(ThumbEvent.END_DRAG, thumbEndDragHandler);
+            thumb.addEventListener(ThumbDragEvent.DRAGGING, thumbDraggingHandler);
+            thumb.addEventListener(ThumbDragEvent.END_DRAG, thumbEndDragHandler);
             
             draggingThumb = true;
+            dispatchChangeStart();
         }
         
-        private function thumbDraggingHandler(event:ThumbEvent):void
+        private function thumbDraggingHandler(event:ThumbDragEvent):void
         {
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
@@ -359,16 +372,43 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        private function thumbEndDragHandler(event:ThumbEvent):void
+        private function thumbEndDragHandler(event:ThumbDragEvent):void
         {
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
-            thumb.removeEventListener(ThumbEvent.DRAGGING, thumbDraggingHandler);
-            thumb.removeEventListener(ThumbEvent.END_DRAG, thumbEndDragHandler);            
+            thumb.removeEventListener(ThumbDragEvent.DRAGGING, thumbDraggingHandler);
+            thumb.removeEventListener(ThumbDragEvent.END_DRAG, thumbEndDragHandler);            
 
             draggingThumb = false;
+            dispatchChangeEnd();
             
             invalidateThumbValues();
+        }
+        
+        private function thumbKeyDownHandler(event:ThumbKeyEvent):void
+        {
+            var thumb:SliderThumb = SliderThumb(event.currentTarget);
+            
+            if(animating)
+                stopAnimation();
+            
+            if(!keyDownOnThumb)
+            {
+                dispatchChangeStart();
+                keyDownOnThumb = true;
+                thumb.addEventListener(ThumbKeyEvent.KEY_UP, thumbKeyUpHandler);
+            }
+            
+            thumb.value = event.newValue;
+        }
+        
+        private function thumbKeyUpHandler(event:ThumbKeyEvent):void
+        {
+            var thumb:SliderThumb = SliderThumb(event.currentTarget);
+            
+            dispatchChangeEnd();
+            keyDownOnThumb = false;
+            thumb.removeEventListener(ThumbKeyEvent.KEY_UP, thumbKeyUpHandler);
         }
         
         private function thumbValueCommitHandler(event:FlexEvent):void
@@ -420,14 +460,10 @@ package com.patrickmowrer.components.supportClasses
                     = valueBasedLayout.pointToValue(trackRelative.x, trackRelative.y);
                 var nearestThumb:SliderThumb = nearestThumbTo(trackClickValue);
                 
-                if(true)
-                {
+                if(getStyle("slideDuration") != 0)
                     beginThumbAnimation(nearestThumb, trackClickValue);
-                }
                 else
-                {
                     nearestThumb.value = trackClickValue;
-                }
             }
         }
         
@@ -462,11 +498,13 @@ package com.patrickmowrer.components.supportClasses
             animating = true;
             animatedThumb = thumb;
             animatedThumb.animateMovementTo(value, endAnimation);
+            
+            dispatchChangeStart();
         }
         
         private function stopAnimation():void
         {
-            animatedThumb.stopAnimation();
+            animatedThumb.stopAnimation();  
             
             endAnimation();
         }
@@ -474,8 +512,19 @@ package com.patrickmowrer.components.supportClasses
         private function endAnimation():void
         {
             animatedThumb = null;
+            animating = false;   
             
-            animating = false;            
+            dispatchChangeEnd();
+        }
+        
+        private function dispatchChangeStart():void
+        {
+            dispatchEvent(new FlexEvent(FlexEvent.CHANGE_START));
+        }
+        
+        private function dispatchChangeEnd():void
+        {
+            dispatchEvent(new FlexEvent(FlexEvent.CHANGE_END));
         }
     }
 }

@@ -4,15 +4,13 @@
 patrickmowrer|HSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.HSliderSkin");
+    data-tip-offset-x: 0;
+    data-tip-offset-y: -25;
 }
 
 patrickmowrer|VSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.VSliderSkin");
-}
-
-patrickmowrer|SliderThumb
-{
-    data-tip-offset-x: 0;
+    data-tip-offset-x: -35; 
     data-tip-offset-y: 0;
 }

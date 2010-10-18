@@ -1,6 +1,7 @@
 package com.patrickmowrer.components.test
 {
     import com.patrickmowrer.components.supportClasses.SliderThumb;
+    import com.patrickmowrer.skins.SliderThumbSkin;
     
     import mx.events.FlexEvent;
     
@@ -30,7 +31,7 @@ package com.patrickmowrer.components.test
         public function setUp():void
         {
             thumb = new SliderThumb();
-            
+            thumb.setStyle("skinClass", SliderThumbSkin);
             UIImpersonator.addChild(thumb);
             
             after(FlexEvent.UPDATE_COMPLETE).on(thumb).pass();

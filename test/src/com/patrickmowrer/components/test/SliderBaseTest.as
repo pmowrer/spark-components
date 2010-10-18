@@ -3,10 +3,16 @@ package com.patrickmowrer.components.test
     import com.patrickmowrer.components.supportClasses.SliderBase;
     import com.patrickmowrer.components.supportClasses.SliderThumb;
     import com.patrickmowrer.layouts.supportClasses.ValueLayout;
+    import com.patrickmowrer.skins.SliderThumbSkin;
     
+    import flash.display.DisplayObject;
+    import flash.display.InteractiveObject;
     import flash.events.Event;
     
+    import mx.core.IVisualElement;
     import mx.events.FlexEvent;
+    import mx.managers.IFocusManager;
+    import mx.managers.IFocusManagerComponent;
     
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
@@ -14,6 +20,7 @@ package com.patrickmowrer.components.test
     import org.hamcrest.collection.array;
     import org.hamcrest.object.equalTo;
     import org.hamcrest.object.hasProperties;
+    import org.hamcrest.object.sameInstance;
     import org.morefluent.integrations.flexunit4.*;
     
     import spark.layouts.supportClasses.LayoutBase;
@@ -24,6 +31,7 @@ package com.patrickmowrer.components.test
         public var morefluentRule:IMethodRule = new MorefluentRule();
         
         private var slider:SliderBase;
+        private var skin:SliderThumbSkin;
         
         private var testValues:Array = [-5, 23, 47, 68, 89];
         
@@ -66,14 +74,28 @@ package com.patrickmowrer.components.test
                 }));
         }
         
-        [Test]
+        [Test(async)]
         public function createsAThumbForEveryValueInValuesProperty():void
         {
-            for(var index:int = 0; index < slider.numElements; index++)
+            for(var index:int = 0; index < slider.values.length; index++)
             {
                 var thumb:SliderThumb = SliderThumb(slider.getElementAt(index));
                 
                 assertThat(thumb.value, equalTo(testValues[index]));
+            }
+        }
+        
+        [Test(async)]
+        public function givesFocusToEachThumb():void
+        {
+            var focusManager:IFocusManager = slider.focusManager;
+            var nextFocus:IFocusManagerComponent;
+            
+            for(var index:int = 0; index < slider.numElements; index++)
+            {
+                nextFocus = focusManager.getNextFocusManagerComponent();
+                assertThat(nextFocus, sameInstance(slider.getElementAt(index)));
+                focusManager.setFocus(nextFocus);
             }
         }
         
@@ -161,7 +183,7 @@ package com.patrickmowrer.components.test
                 .assert(slider, "values").equals([2, 5, 10]);
         }
         
-        [Test]
+        [Test(async)]
         public function allowsOverlappingValues():void
         {
             slider.allowOverlap = true;
@@ -176,12 +198,17 @@ package com.patrickmowrer.components.test
             slider.snapInterval = 4;
             
             after(FlexEvent.UPDATE_COMPLETE).on(slider).assert(slider, "values").equals([-6, 22, 46, 70, 90]);
-        }
+        }        
     }
 }
 
 import com.patrickmowrer.components.supportClasses.SliderThumb;
 import com.patrickmowrer.layouts.supportClasses.ValueLayout;
+import com.patrickmowrer.skins.SliderThumbSkin;
+
+import flash.net.registerClassAlias;
+import flash.utils.getDefinitionByName;
+import flash.utils.getQualifiedClassName;
 
 import mx.core.IFactory;
 
@@ -189,9 +216,13 @@ import spark.layouts.supportClasses.LayoutBase;
 
 internal class ThumbFactory implements IFactory
 {
+    public var skin:SliderThumbSkin;
     public function newInstance():*
     {
-        return new SliderThumb();
+        var sliderThumb:SliderThumb = new SliderThumb();
+        sliderThumb.setStyle("skinClass", SliderThumbSkin);
+        
+        return sliderThumb;
     }
 }
 

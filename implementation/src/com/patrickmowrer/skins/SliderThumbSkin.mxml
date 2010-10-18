@@ -3,16 +3,17 @@
     xmlns:fx="http://ns.adobe.com/mxml/2009" 
     xmlns:s="library://ns.adobe.com/flex/spark" 
     xmlns:fb="http://ns.adobe.com/flashbuilder/2009" 
-    alpha.disabled="0.5" xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*"
+    xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*"
+    alpha.disabled="0.5" 
 >
 
     <fx:Metadata>
         [HostComponent("com.patrickmowrer.components.supportClasses.SliderThumb")]
     </fx:Metadata> 
-    
+
     <fx:Declarations>
         <fx:Component id="dataTip">     
-            <supportClasses:SliderThumbDataTip minHeight="24" minWidth="40" y="-34">  
+            <supportClasses:SliderThumbDataTip minHeight="24" minWidth="40" y="0">  
                 <s:Rect top="0" left="0" right="0" bottom="0">
                     <s:fill>
                         <s:SolidColor color="0x000000" alpha=".9"/>
@@ -36,12 +37,7 @@
         <s:State name="disabled" />
     </s:states>
 
-    <s:Group id="contentGroup" left="0" right="0" top="0" bottom="0" minWidth="0" minHeight="0">
-        <s:layout>
-            <s:HorizontalLayout />
-        </s:layout>
-        
-        <s:Button id="button" skinClass="mx.skins.spark.SliderThumbSkin" />
-    </s:Group>
+    <s:Button id="button" top="0" bottom="0" width="11" height="11" 
+                skinClass="spark.skins.spark.HSliderThumbSkin" />
 
 </s:Skin>
