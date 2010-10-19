@@ -4,7 +4,6 @@
 patrickmowrer|HSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.HSliderSkin");
-    data-tip-offset-x: 0;
     data-tip-offset-y: -25;
 }
 
@@ -12,6 +11,11 @@ patrickmowrer|VSlider
 {
     skinClass: ClassReference("com.patrickmowrer.skins.VSliderSkin");
     data-tip-offset-x: 35; 
+}
+
+patrickmowrer|SliderBase
+{
+    data-tip-offset-x: 0; 
     data-tip-offset-y: 0;
 }
 

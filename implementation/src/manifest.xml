@@ -3,4 +3,7 @@
     <component id="HSlider" class="com.patrickmowrer.components.HSlider" />
     <component id="VSlider" class="com.patrickmowrer.components.VSlider" />
     <component id="SliderBase" class="com.patrickmowrer.components.supportClasses.SliderBase" />
+    
+    <component id="HorizontalValueLayout" class="com.patrickmowrer.layouts.HorizontalValueLayout" />
+    <component id="VerticalValueLayout" class="com.patrickmowrer.layouts.VerticalValueLayout" />
 </componentPackage>
