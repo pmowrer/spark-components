@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <componentPackage>
-    <component id="HSlider" class="com.patrickmowrer.components.HSlider"/>
-    <component id="VSlider" class="com.patrickmowrer.components.VSlider"/>
+    <component id="HSlider" class="com.patrickmowrer.components.HSlider" />
+    <component id="VSlider" class="com.patrickmowrer.components.VSlider" />
+    <component id="SliderBase" class="com.patrickmowrer.components.supportClasses.SliderBase" />
 </componentPackage>

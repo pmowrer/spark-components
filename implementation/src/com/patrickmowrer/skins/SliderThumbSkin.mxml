@@ -38,6 +38,6 @@
     </s:states>
 
     <s:Button id="button" top="0" bottom="0" width="11" height="11" 
-                skinClass="spark.skins.spark.HSliderThumbSkin" />
+                skinClass="com.patrickmowrer.skins.SliderThumbButtonSkin" />
 
 </s:Skin>

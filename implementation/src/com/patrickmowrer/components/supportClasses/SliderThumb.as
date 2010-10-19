@@ -54,7 +54,7 @@ package com.patrickmowrer.components.supportClasses
         private var valueChanged:Boolean = false;
         
         private var valueRange:ValueRange;
-        private var clickOffsetFromCenter:Point;
+        private var clickOffset:Point;
         private var animation:SliderThumbAnimation;
         
         public function SliderThumb()
@@ -221,10 +221,8 @@ package com.patrickmowrer.components.supportClasses
             
             var globalClick:Point = new Point(event.stageX, event.stageY);
             var localClick:Point = globalToLocal(globalClick);
-            var xOffsetFromCenter:Number = localClick.x - (getLayoutBoundsWidth() / 2);
-            var yOffsetFromCenter:Number = localClick.y - (getLayoutBoundsHeight() / 2);
             
-            clickOffsetFromCenter = new Point(xOffsetFromCenter, yOffsetFromCenter);
+            clickOffset = new Point(localClick.x, localClick.y);
             
             dispatchThumbEvent(ThumbDragEvent.BEGIN_DRAG, globalClick);     
             
@@ -235,7 +233,7 @@ package com.patrickmowrer.components.supportClasses
         private function systemMouseMoveHandler(event:MouseEvent):void
         {
             var mouseMovedTo:Point = 
-                new Point(event.stageX - clickOffsetFromCenter.x, event.stageY - clickOffsetFromCenter.y);
+                new Point(event.stageX - clickOffset.x, event.stageY - clickOffset.y);
           
             dispatchThumbEvent(ThumbDragEvent.DRAGGING, mouseMovedTo);
         }
@@ -248,7 +246,7 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.removeEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
             sandboxRoot.removeEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler); 
             
-            clickOffsetFromCenter = null;
+            clickOffset = null;
             
             dispatchThumbEvent(ThumbDragEvent.END_DRAG, new Point(event.stageX, event.stageY));
             
@@ -291,7 +289,7 @@ package com.patrickmowrer.components.supportClasses
             if(event.isDefaultPrevented())
                 return;
             
-            var newValue:Number;
+            var newValue:Number = value;
             var thumbKeyEvent:ThumbKeyEvent;
 
             switch(event.keyCode)
@@ -313,7 +311,7 @@ package com.patrickmowrer.components.supportClasses
             
             event.preventDefault();
             
-            if(newValue)
+            if(newValue != value)
             {            
                 thumbKeyEvent = new ThumbKeyEvent(ThumbKeyEvent.KEY_DOWN, newValue);
                 dispatchEvent(thumbKeyEvent);
