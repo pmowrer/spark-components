@@ -4,12 +4,78 @@
     xmlns:s="library://ns.adobe.com/flex/spark" 
     xmlns:mx="library://ns.adobe.com/flex/mx" 
     xmlns:ns="library://ns.patrickmowrer.com"
-    minWidth="955" minHeight="600" 
+    xmlns:local="*"
+    width="550"
+    height="650"
+    backgroundAlpha="0"
 >
-    <fx:Declarations>
-        <!-- Place non-visual elements (e.g., services, value objects) here -->
-    </fx:Declarations>
-    
-    <ns:HSlider />    
+
+    <s:VGroup horizontalCenter="0" verticalCenter="0" gap="25">
+        <s:Group>
+            <s:Rect top="0" bottom="0" left="0" right="0">
+                <s:stroke>
+                    <s:SolidColorStroke weight="2" color="0x2e2a27" />
+                </s:stroke>
+            </s:Rect>
+            
+            <s:Rect top="2" height="30" left="2" right="2">
+                <s:fill>
+                    <s:SolidColor color="0x7e2c2c" />
+                </s:fill>
+            </s:Rect>
+            
+            <s:Label text="com.patrickmowrer.components.HSlider" fontSize="14" color="0xffffff" top="10" left="10" />
+            
+            <local:MultivalueSliderModifiers top="50" bottom="10">
+                <local:slider>        
+                    <ns:HSlider width="200" slideDuration="1000" />
+                </local:slider>
+            </local:MultivalueSliderModifiers>             
+        </s:Group>
+        
+        <s:Group width="100%">
+            <s:Rect top="0" bottom="0" left="0" right="0">
+                <s:stroke>
+                    <s:SolidColorStroke weight="2" color="0x2e2a27" />
+                </s:stroke>
+            </s:Rect>
+            
+            <s:Rect top="2" height="30" left="2" right="2">
+                <s:fill>
+                    <s:SolidColor color="0x7e2c2c" />
+                </s:fill>
+            </s:Rect>
+            
+            <s:Label text="spark.components.HSlider" fontSize="14" color="0xffffff" top="10" left="10" />
+            
+            <local:SinglevalueSliderModifiers top="50" bottom="10">
+                <local:slider>        
+                    <s:HSlider width="200" slideDuration="1000" />    
+                </local:slider>
+            </local:SinglevalueSliderModifiers>             
+        </s:Group>             
+   
+        <s:Group>
+            <s:Rect top="0" bottom="0" left="0" right="0">
+                <s:stroke>
+                    <s:SolidColorStroke weight="2" color="0x2e2a27" />
+                </s:stroke>
+            </s:Rect>
+            
+            <s:Rect top="2" height="30" left="2" right="2">
+                <s:fill>
+                    <s:SolidColor color="0x7e2c2c" />
+                </s:fill>
+            </s:Rect>
+            
+            <s:Label text="mx.controls.HSlider" fontSize="14" color="0xffffff" top="10" left="10" />
+            
+            <local:MultivalueSliderModifiers top="50" bottom="10">
+                <local:slider>        
+                    <mx:HSlider width="200" thumbCount="2" showTrackHighlight="true" />     
+                </local:slider>
+            </local:MultivalueSliderModifiers>             
+        </s:Group>
+    </s:VGroup>
     
 </s:Application>

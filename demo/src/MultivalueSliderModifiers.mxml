@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:SinglevalueSliderModifiers 
+    xmlns:fx="http://ns.adobe.com/mxml/2009" 
+    xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:mx="library://ns.adobe.com/flex/mx" 
+    xmlns:local="*"
+    creationComplete="init()"
+>
+
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+        <s:VGroup id="thumbCountGroup">
+            <s:Label text="Thumb count:" />
+            <s:NumericStepper id="thumbCountInput" />
+        </s:VGroup>
+        
+        <s:VGroup id="allowOverlapGroup">
+            <s:Label text="Allow overlap:" />
+            <s:CheckBox id="allowOverlapCheckbox" />
+        </s:VGroup>
+    </fx:Declarations>
+    
+    <fx:Script>
+        <![CDATA[
+            import mx.binding.utils.BindingUtils;
+            
+            private function init():void
+            {
+                contentGroup.addElement(thumbCountGroup);
+                contentGroup.addElement(allowOverlapGroup);
+                
+                BindingUtils.bindSetter(updateThumbCount, thumbCountInput, "value");
+                BindingUtils.bindSetter(updateAllowOverlap, allowOverlapCheckbox, "selected");
+            }
+            
+            private function updateThumbCount(value:int):void
+            {
+                if(slider.values.length == value)
+                {
+                    return;
+                }
+                
+                var values:Array = [];
+                
+                for(var i:int = slider.minimum; i < slider.minimum + value; i++)
+                {
+                    values.push(i);
+                }
+                
+                slider.values = values;
+                
+                if(slider.hasOwnProperty("thumbCount"))
+                {
+                    slider.thumbCount = values.length;
+                }
+            }
+            
+            private function updateAllowOverlap(value:Boolean):void
+            {
+                if(value != getAllowOverlapPropertyValue(slider))
+                {
+                    setAllowOverlapPropertyValue(slider, value);
+                }
+            }
+            
+            override protected function get valueField():String
+            {
+                return "values";
+            }
+            
+            override protected function addInputListeners():void
+            {
+                super.addInputListeners();
+                
+                thumbCountInput.addEventListener(Event.CHANGE, changeHandler);
+                allowOverlapCheckbox.addEventListener(Event.CHANGE, changeHandler);
+            }
+            
+            override protected function updateModifierValues():void
+            {
+                thumbCountInput.value = slider.values.length;
+
+                super.updateModifierValues();
+            }
+            
+            private function getAllowOverlapPropertyValue(slider:Object):Boolean
+            {
+                if(slider.hasOwnProperty("allowThumbOverlap"))
+                {
+                    return slider.allowThumbOverlap;
+                }
+                else if(slider.hasOwnProperty("allowOverlap"))
+                {
+                    return slider.allowOverlap;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            
+            private function setAllowOverlapPropertyValue(slider:Object, value:Boolean):void
+            {
+                if(slider.hasOwnProperty("allowThumbOverlap"))
+                {
+                    slider.allowThumbOverlap = value;
+                }
+                else if(slider.hasOwnProperty("allowOverlap"))
+                {
+                    slider.allowOverlap = value;
+                }
+            }
+            
+        ]]>
+    </fx:Script>
+    
+
+    
+</local:SinglevalueSliderModifiers>

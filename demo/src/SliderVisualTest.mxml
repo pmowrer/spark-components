@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               xmlns:ns="library://ns.patrickmowrer.com"
+               xmlns:local="*"
+               minWidth="955" minHeight="600" xmlns:supportClasses="com.patrickmowrer.components.supportClasses.*" xmlns:skins="com.patrickmowrer.skins.*"
+>    
+    <fx:Script>
+        <![CDATA[
+            import mx.skins.spark.SliderThumbSkin;
+        ]]>
+    </fx:Script>
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+    
+    <local:MultivalueSliderModifiers x="100" y="50">
+        <local:slider>
+            <mx:HSlider thumbCount="2" values="{[7.5, 2.5]}" showTrackHighlight="true" />            
+        </local:slider>
+    </local:MultivalueSliderModifiers>      
+    
+    <local:SinglevalueSliderModifiers x="100" y="200">
+        <local:slider>
+            <s:HSlider width="500" slideDuration="1000" />            
+        </local:slider>
+    </local:SinglevalueSliderModifiers>  
+
+    <local:MultivalueSliderModifiers x="100" y="350">
+        <local:slider>        
+            <ns:HSlider width="500" values="{[50, 100, 20]}" slideDuration="1000" />
+        </local:slider>
+    </local:MultivalueSliderModifiers> 
+    
+    <local:MultivalueSliderModifiers x="100" y="500">
+        <local:slider>        
+            <ns:VSlider height="100" values="{[50, 100, 20]}" slideDuration="1000" />
+        </local:slider>
+    </local:MultivalueSliderModifiers> 
+                   
+</s:Application>

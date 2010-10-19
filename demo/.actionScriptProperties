@@ -15,6 +15,7 @@
   </compiler>
   <applications>
     <application path="Sliders.mxml"/>
+    <application path="SliderVisualTest.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>
