@@ -22,8 +22,6 @@ package com.patrickmowrer.layouts.test
     [RunWith("org.flexunit.runners.Parameterized")]
     public class HorizontalValueLayoutTest
     {		
-        private const WIDTH:Number = 160;
-        
         private var layout:HorizontalValueLayout;
         private var group:Group;
         private var element:IVisualElement;
@@ -54,37 +52,22 @@ package com.patrickmowrer.layouts.test
         public static var positional:Array = [	[10, 0, 20, 0, 100, 50], 
                                                 [10, 0, 10, 11, 100, 89], 
                                                 [-12, -15, -5, 1, 100, 29.7], 
-                                                [0.4523, 0, 1, 1.52, 100, 44.5]  ];
+                                                [0.4523, 0, 1, 1.52, 100, 44.5] ];
         
-        /** With the vertical layout, max and min are seemingly reversed because the max value is typically
-         *   represented with a lower-value y-coordinate than the min value. */
         [Test(dataProvider="positional")]
         public function positionsElementCenterHorizontallyWithRespectToItsValuePropertyInRelationToBounds
-            (value:Number, min:Number, max:Number, elementWidth:Number, targetWidth:Number, expected:Number):void
+            (value:Number, min:Number, max:Number, elementWidth:Number, containerWidth:Number, expected:Number):void
         {
             element = new VisualElementWithValue(value);
             
             layout.minimum = min;
             layout.maximum = max;
             element.setLayoutBoundsSize(elementWidth, 0);
-            group.width = targetWidth;
+            group.width = containerWidth;
             group.addElement(element);
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
                 .assert(element, "x").equals(expected);
-        }
-        
-        [Test]
-        public function positionsElementAt0WidthIfElementWidthIsGreaterThanContainerWidth():void
-        {
-            element = new VisualElementWithValue(40);
-            
-            element.setLayoutBoundsSize(100, 0);
-            group.width = 10;
-            group.addElement(element);
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(element, "x").equals(0);
         }
         
         public static var boundedByMax:Array = [	[100, 0, 20, 123.45, 123.45], 
@@ -123,24 +106,6 @@ package com.patrickmowrer.layouts.test
             
             after(FlexEvent.UPDATE_COMPLETE).on(group)
                 .assert(element, "x").equals(expected);
-        }
-        
-        public static var translate:Array = [	[10, null, 100, 0, 20, 2], 
-                                                [15, 15, 100, -15, -5, -13.235294117647058], 
-                                                [48.3234287352537, 0, 100, 20, 160, 87.65280022935518] ];
-        
-        [Test(dataProvider="translate")]
-        public function translatesContainerRelativeXCoordinateToValue
-            (x:Number, elementWidth:Number, targetWidth:Number, min:Number, max:Number, expected:Number):void
-        {   
-            var dummyElement:IVisualElement = new VisualElementWithValue(0);
-            dummyElement.width = elementWidth;
-            
-            layout.minimum = min;
-            layout.maximum = max;
-            group.setLayoutBoundsSize(targetWidth, 0);
-            
-            assertThat(layout.pointToValue(new Point(x, 0), dummyElement), equalTo(expected));
         }
     }
 }

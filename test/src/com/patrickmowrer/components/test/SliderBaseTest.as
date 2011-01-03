@@ -253,7 +253,7 @@ internal class ValueBasedLayoutDummy extends LayoutBase implements ValueLayout
         _max = value;
     }
     
-    public function pointToValue(point:Point, relativeTo:IVisualElement = null):Number
+    public function pointToValue(point:Point):Number
     {
         return 0;
     }

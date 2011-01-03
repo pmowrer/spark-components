@@ -8,6 +8,6 @@ package com.patrickmowrer.layouts.supportClasses
 
     public interface ValueLayout extends ValueBounding
     {
-        function pointToValue(point:Point, relativeTo:IVisualElement = null):Number;
+        function pointToValue(point:Point):Number;
     }
 }

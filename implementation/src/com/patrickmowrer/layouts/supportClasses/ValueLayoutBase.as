@@ -50,7 +50,7 @@ package com.patrickmowrer.layouts.supportClasses
             invalidateTargetDisplayList();
         }
         
-        public function pointToValue(point:Point, relativeTo:IVisualElement = null):Number
+        public function pointToValue(point:Point):Number
         {
             throw new IllegalOperationError("pointToValue must be overriden in sub-class.");
         }

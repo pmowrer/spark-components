@@ -67,14 +67,14 @@ package com.patrickmowrer.components.supportClasses
             return maximum - minimum;
         }
         
-        public function getNearestValidValueFromFraction(fraction:Number):Number
+        public function getNearestValidValueFromRatio(ratio:Number):Number
         {
-            var valueFromFraction:Number = fraction * boundsDelta + minimum;
+            var value:Number = ratio * boundsDelta + minimum;
             
-            return getNearestValidValueTo(valueFromFraction);
+            return getNearestValidValueTo(value);
         }
         
-        public function getNearestValidFractionOfRange(value:Number):Number
+        public function getNearestValidRatioFromValue(value:Number):Number
         {
             return (getNearestValidValueTo(value) - minimum) / boundsDelta;
         }

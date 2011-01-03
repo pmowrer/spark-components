@@ -65,7 +65,7 @@ package com.patrickmowrer.components.test
             valueRange.maximum = 1;
             valueRange.snapInterval = 0;
             
-            assertThat(valueRange.getNearestValidFractionOfRange(0.4523), equalTo(0.4523));
+            assertThat(valueRange.getNearestValidRatioFromValue(0.4523), equalTo(0.4523));
         }
         
         [Test]

@@ -4,15 +4,12 @@ package com.patrickmowrer.components.supportClasses
     import com.patrickmowrer.events.ThumbKeyEvent;
     
     import flash.display.DisplayObject;
-    import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     import flash.ui.Keyboard;
     
-    import mx.core.IDataRenderer;
     import mx.core.IFactory;
-    import mx.core.IVisualElement;
     import mx.core.UIComponent;
     import mx.core.mx_internal;
     import mx.events.FlexEvent;
@@ -23,9 +20,6 @@ package com.patrickmowrer.components.supportClasses
     import spark.components.Button;
     import spark.components.DataRenderer;
     import spark.components.supportClasses.SkinnableComponent;
-    import spark.effects.animation.MotionPath;
-    import spark.effects.animation.SimpleMotionPath;
-    import spark.effects.easing.Sine;
     
     use namespace mx_internal;
     
@@ -56,6 +50,8 @@ package com.patrickmowrer.components.supportClasses
         private var valueRange:ValueRange;
         private var clickOffset:Point;
         private var animation:SliderThumbAnimation;
+        
+        private var isDragging:Boolean;
         
         public function SliderThumb()
         {
@@ -213,6 +209,9 @@ package com.patrickmowrer.components.supportClasses
         
         private function mouseDownHandler(event:MouseEvent):void
         {
+            if(isDragging)
+                return;
+            
             var sandboxRoot:DisplayObject = systemManager.getSandboxRoot();
             
             sandboxRoot.addEventListener(MouseEvent.MOUSE_MOVE, systemMouseMoveHandler, true);
@@ -223,6 +222,7 @@ package com.patrickmowrer.components.supportClasses
             var localClick:Point = globalToLocal(globalClick);
             
             clickOffset = new Point(localClick.x, localClick.y);
+            isDragging = true;
             
             dispatchThumbEvent(ThumbDragEvent.BEGIN_DRAG, globalClick);     
             
@@ -247,7 +247,8 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.removeEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler); 
             
             clickOffset = null;
-            
+            isDragging = false;    
+        
             dispatchThumbEvent(ThumbDragEvent.END_DRAG, new Point(event.stageX, event.stageY));
             
             if(dataTip)

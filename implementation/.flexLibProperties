@@ -21,6 +21,7 @@
     <classEntry path="com.patrickmowrer.skins.SliderThumbSkin"/>
     <classEntry path="com.patrickmowrer.components.supportClasses.SliderThumbDataTip"/>
     <classEntry path="com.patrickmowrer.skins.SliderThumbButtonSkin"/>
+    <classEntry path="com.patrickmowrer.layouts.supportClasses.LinearValueLayout"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

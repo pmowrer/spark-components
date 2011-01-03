@@ -133,15 +133,12 @@ package com.patrickmowrer.layouts.test
         [Test(dataProvider="translate")]
         public function translatesContainerRelativeYCoordinateToValue
             (y:Number, elementHeight:Number, targetHeight:Number, min:Number, max:Number, expected:Number):void
-        {   
-            var dummyElement:IVisualElement = new VisualElementWithValue(0);
-            dummyElement.height = elementHeight;
-            
+        {               
             layout.minimum = min;
             layout.maximum = max;
             group.setLayoutBoundsSize(0, targetHeight);
             
-            assertThat(layout.pointToValue(new Point(0, y), dummyElement), equalTo(expected));
+            assertThat(layout.pointToValue(new Point(0, y)), equalTo(expected));
         }
     }
 }
