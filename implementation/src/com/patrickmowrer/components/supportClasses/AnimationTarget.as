@@ -62,7 +62,6 @@ package com.patrickmowrer.components.supportClasses
         {
             if (updateFunction != null)
                 updateFunction(animation);
-        }
-        
+        }      
     }
 }
