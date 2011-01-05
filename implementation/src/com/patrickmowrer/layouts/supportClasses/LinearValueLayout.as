@@ -59,21 +59,13 @@ package com.patrickmowrer.layouts.supportClasses
                 {
                     var value:Number = ValueCarrying(element).value;
                     var ratio:Number = valueRange.getNearestValidRatioFromValue(value);
-                    var x:Number = (start.x * width) + deltaX * horizontalMovementRangeFor(element, width) * ratio;
-                    var y:Number = (start.y * height) + deltaY * verticalMovementRangeFor(element, height) * ratio;
-                    
-                    //trace(y, start.y, height, deltaY, ratio);
-                    
+                    var x:Number = (start.x * width) + deltaX * width * ratio;
+                    var y:Number = (start.y * height) + deltaY * height * ratio;
+
                     element.setLayoutBoundsSize(NaN, NaN);
                     element.setLayoutBoundsPosition(x, y);
                 }
             }
-        }
-        
-        private function isWithinContainer(point:Point):Boolean
-        {
-            return (point.x >= 0 && point.x <= target.getLayoutBoundsWidth()) && 
-                   (point.y >= 0 && point.y <= target.getLayoutBoundsHeight());
         }
         
         private function horizontalMovementRangeFor(element:IVisualElement, width:Number):Number

@@ -46,17 +46,17 @@ package com.patrickmowrer.layouts.test
         private var layout:LinearValueLayout;
         private var group:Group;
         
+        private static const GROUP_WIDTH:Number = 200;
+        private static const GROUP_HEIGHT:Number = 100;
+        
         [Rule]
         public var morefluentRule:IMethodRule = new MorefluentRule(); 
         
         [Before(async, ui)]
         public function setUp():void
         {
-            layout = new LinearValueLayout(new Point(0, 0), new Point(1, 1));
-
             group = new Group();
-            group.setLayoutBoundsSize(200, 100);
-            group.layout = layout;
+            group.setLayoutBoundsSize(GROUP_WIDTH, GROUP_HEIGHT);
             
             UIImpersonator.addChild(group);
             after(FlexEvent.UPDATE_COMPLETE).on(group).pass();
@@ -67,6 +67,30 @@ package com.patrickmowrer.layouts.test
         {
             UIImpersonator.removeChild(group);			
             group = null;
+        }
+        
+        public static var positional:Array = [	
+            [10, new Point(0, 0), new Point(1, 1), 0, 100, 1, 1, new Point(20, 10)]
+        ];
+        
+        [Test(dataProvider="positional")]
+        public function positionsElementInContainerWithinGivenBoundsAccordingToValue
+            (value:Number, start:Point, end:Point, min:Number, max:Number, 
+             elementWidth:Number, elementHeight:Number, expected:Point):void
+        {
+            var element:IVisualElement = new VisualElementWithValue(value);
+            element.setLayoutBoundsSize(elementWidth, elementHeight);
+            
+            layout = new LinearValueLayout(start, end);
+            layout.minimum = min;
+            layout.maximum = max;
+
+            group.layout = layout;
+            group.addElement(element);
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(group)
+                .assert(element, "x").equals(expected.x).and()
+                .assert(element, "y").equals(expected.y);
         }
         
         public static var translate:Array = [   
@@ -81,8 +105,8 @@ package com.patrickmowrer.layouts.test
             [new Point(0.0, 0.0), new Point(1, 1), 20, 101, 0, 100, 10]  ];
         
         [Test(dataProvider="translate")]
-        public function translatesContainerRelativeCoordinateToValue(start:Point, end:Point, containerX:Number, containerY:Number,
-             min:Number, max:Number, expected:Number):void
+        public function translatesContainerRelativeCoordinateToValue
+            (start:Point, end:Point, containerX:Number, containerY:Number, min:Number, max:Number, expected:Number):void
         {   
             layout = new LinearValueLayout(start, end);
             layout.minimum = min;
@@ -90,32 +114,6 @@ package com.patrickmowrer.layouts.test
             group.layout = layout;
             
             assertThat(layout.pointToValue(new Point(containerX, containerY)), equalTo(expected));
-        }
-        
-        [Test(async)]
-        public function positionsElementAtXEquals0IfElementWidthIsGreaterThanContainerWidth():void
-        {
-            var element:IVisualElement = new VisualElementWithValue(40);
-            
-            element.setLayoutBoundsSize(100, 0);
-            group.width = 10;
-            group.addElement(element);
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(element, "x").equals(0);
-        }
-        
-        [Test]
-        public function positionsElementAtYEquals0IfElementHeightIsGreaterThanContainerHeight():void
-        {
-            var element:IVisualElement = new VisualElementWithValue(40);
-            
-            element.setLayoutBoundsSize(0, 100);
-            group.height = 10;
-            group.addElement(element);
-            
-            after(FlexEvent.UPDATE_COMPLETE).on(group)
-                .assert(element, "y").equals(0);
         }
     }
 }
