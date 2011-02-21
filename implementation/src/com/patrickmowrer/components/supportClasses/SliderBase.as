@@ -24,8 +24,8 @@
 
 package com.patrickmowrer.components.supportClasses
 {
-    import com.patrickmowrer.events.ThumbDragEvent;
     import com.patrickmowrer.events.ThumbKeyEvent;
+    import com.patrickmowrer.events.ThumbMouseEvent;
     import com.patrickmowrer.layouts.supportClasses.ValueLayout;
     
     import flash.events.Event;
@@ -212,7 +212,7 @@ package com.patrickmowrer.components.supportClasses
                 thumb.setStyle("slideDuration", slideDuration);
                 
                 thumb.addEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                thumb.addEventListener(ThumbDragEvent.BEGIN_DRAG, thumbBeginDragHandler);
+                thumb.addEventListener(ThumbMouseEvent.PRESS, thumbPressHandler);
                 thumb.addEventListener(ThumbKeyEvent.KEY_DOWN, thumbKeyDownHandler);
                 thumb.addEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
                 
@@ -235,7 +235,7 @@ package com.patrickmowrer.components.supportClasses
                 var thumb:SliderThumb = SliderThumb(instance);
                 
                 thumb.removeEventListener(MouseEvent.MOUSE_DOWN, thumbMouseDownHandler);
-                thumb.removeEventListener(ThumbDragEvent.BEGIN_DRAG, thumbBeginDragHandler);
+                thumb.removeEventListener(ThumbMouseEvent.PRESS, thumbPressHandler);
                 thumb.removeEventListener(ThumbKeyEvent.KEY_DOWN, thumbKeyDownHandler);
                 thumb.removeEventListener(FlexEvent.VALUE_COMMIT, thumbValueCommitHandler);
             }
@@ -356,21 +356,21 @@ package com.patrickmowrer.components.supportClasses
                 swapElements(instance, lastIndexElement);
         }
 
-        private function thumbBeginDragHandler(event:ThumbDragEvent):void
+        private function thumbPressHandler(event:ThumbMouseEvent):void
         {
             if(animating)
                 animatedThumb.stopAnimation();
            
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
-            thumb.addEventListener(ThumbDragEvent.DRAGGING, thumbDraggingHandler);
-            thumb.addEventListener(ThumbDragEvent.END_DRAG, thumbEndDragHandler);
+            thumb.addEventListener(ThumbMouseEvent.DRAGGING, thumbDraggingHandler);
+            thumb.addEventListener(ThumbMouseEvent.RELEASE, thumbReleaseHandler);
             
             draggingThumb = true;
             dispatchChangeStart();
         }
         
-        private function thumbDraggingHandler(event:ThumbDragEvent):void
+        private function thumbDraggingHandler(event:ThumbMouseEvent):void
         {
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
@@ -383,12 +383,12 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
-        private function thumbEndDragHandler(event:ThumbDragEvent):void
+        private function thumbReleaseHandler(event:ThumbMouseEvent):void
         {
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
-            thumb.removeEventListener(ThumbDragEvent.DRAGGING, thumbDraggingHandler);
-            thumb.removeEventListener(ThumbDragEvent.END_DRAG, thumbEndDragHandler);            
+            thumb.removeEventListener(ThumbMouseEvent.DRAGGING, thumbDraggingHandler);
+            thumb.removeEventListener(ThumbMouseEvent.RELEASE, thumbReleaseHandler);            
 
             draggingThumb = false;
             dispatchChangeEnd();
@@ -469,7 +469,6 @@ package com.patrickmowrer.components.supportClasses
                 var trackRelative:Point = track.globalToLocal(new Point(event.stageX, event.stageY));
                 var trackClickValue:Number = valueBasedLayout.pointToValue(trackRelative);
                 var nearestThumb:SliderThumb = nearestThumbTo(trackClickValue);
-                //var thumbValue:Number = valueBasedLayout.pointToValue(trackRelative, nearestThumb);
                 
                 if(getStyle("slideDuration") != 0)
                     beginThumbAnimation(nearestThumb, trackClickValue);

@@ -26,16 +26,16 @@ package com.patrickmowrer.events
 {
     import flash.events.Event;
     
-    public class ThumbDragEvent extends Event
+    public class ThumbMouseEvent extends Event
     {
-        public static const BEGIN_DRAG:String = "com.patricknowrer.events.ThumbDragEventBeginDrag";
-        public static const DRAGGING:String = "com.patricknowrer.events.ThumbDragEventDragging";
-        public static const END_DRAG:String = "com.patricknowrer.events.ThumbDragEventEndDrag";
+        public static const PRESS:String    = "com.patrickmowrer.events.ThumbMouseEventPress";
+        public static const DRAGGING:String = "com.patrickmowrer.events.ThumbMouseEventDragging";
+        public static const RELEASE:String  = "com.patrickmowrer.events.ThumbMouseEventRelease";
         
         public var stageX:Number;
         public var stageY:Number;
         
-        public function ThumbDragEvent(type:String, stageX:Number, stageY:Number, bubbles:Boolean = false, cancelable:Boolean = false)
+        public function ThumbMouseEvent(type:String, stageX:Number, stageY:Number, bubbles:Boolean = true, cancelable:Boolean = false)
         {
             super(type, bubbles, cancelable);
             
@@ -45,7 +45,7 @@ package com.patrickmowrer.events
         
         override public function clone():Event
         {
-            return new ThumbDragEvent(type, stageY, stageX, bubbles, cancelable);
+            return new ThumbMouseEvent(type, stageY, stageX, bubbles, cancelable);
         }
     }
 }

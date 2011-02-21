@@ -24,8 +24,8 @@
 
 package com.patrickmowrer.components.supportClasses
 {
-    import com.patrickmowrer.events.ThumbDragEvent;
     import com.patrickmowrer.events.ThumbKeyEvent;
+    import com.patrickmowrer.events.ThumbMouseEvent;
     
     import flash.display.DisplayObject;
     import flash.events.KeyboardEvent;
@@ -248,7 +248,7 @@ package com.patrickmowrer.components.supportClasses
             clickOffset = new Point(localClick.x, localClick.y);
             isDragging = true;
             
-            dispatchThumbEvent(ThumbDragEvent.BEGIN_DRAG, globalClick);     
+            dispatchThumbEvent(ThumbMouseEvent.PRESS, globalClick);     
             
             if(dataTip)
                 createDynamicPartInstance("dataTip");
@@ -259,7 +259,7 @@ package com.patrickmowrer.components.supportClasses
             var mouseMovedTo:Point = 
                 new Point(event.stageX - clickOffset.x, event.stageY - clickOffset.y);
           
-            dispatchThumbEvent(ThumbDragEvent.DRAGGING, mouseMovedTo);
+            dispatchThumbEvent(ThumbMouseEvent.DRAGGING, mouseMovedTo);
         }
         
         private function systemMouseUpHandler(event:MouseEvent):void
@@ -273,7 +273,7 @@ package com.patrickmowrer.components.supportClasses
             clickOffset = null;
             isDragging = false;    
         
-            dispatchThumbEvent(ThumbDragEvent.END_DRAG, new Point(event.stageX, event.stageY));
+            dispatchThumbEvent(ThumbMouseEvent.RELEASE, new Point(event.stageX, event.stageY));
             
             if(dataTip)
                 removeDynamicPartInstance("dataTip", dataTipInstance);
@@ -281,7 +281,7 @@ package com.patrickmowrer.components.supportClasses
         
         private function dispatchThumbEvent(type:String, point:Point):void
         {
-            dispatchEvent(new ThumbDragEvent(type, point.x, point.y));            
+            dispatchEvent(new ThumbMouseEvent(type, point.x, point.y));            
         }
         
         private function moveHandler(event:MoveEvent):void
