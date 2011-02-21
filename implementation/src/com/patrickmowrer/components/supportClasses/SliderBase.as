@@ -74,6 +74,7 @@ package com.patrickmowrer.components.supportClasses
         
         private var animating:Boolean = false;
         private var draggingThumb:Boolean = false;
+        private var thumbPressOffset:Point;
         private var keyDownOnThumb:Boolean = false;
         
         private var thumbs:Vector.<SliderThumb>;
@@ -363,6 +364,14 @@ package com.patrickmowrer.components.supportClasses
            
             var thumb:SliderThumb = SliderThumb(event.currentTarget);
             
+            // Store the delta between mouse pointer's position on thumb down and the current value of the thumb.
+            // On dragging, this value is used to offset the new value, making it appear as
+            // if the mouse pointer stays in the same position over the thumb. Can't trust the thumb's
+            // own measurements here since it doesn't know how the layout is positioning it relative to its value.
+            var thumbPressPoint:Point = contentGroup.globalToLocal(new Point(event.stageX, event.stageY));
+            var thumbPoint:Point = valueBasedLayout.valueToPoint(thumb.value);            
+            thumbPressOffset = new Point(thumbPoint.x - thumbPressPoint.x, thumbPoint.y - thumbPressPoint.y);
+            
             thumb.addEventListener(ThumbMouseEvent.DRAGGING, thumbDraggingHandler);
             thumb.addEventListener(ThumbMouseEvent.RELEASE, thumbReleaseHandler);
             
@@ -378,6 +387,7 @@ package com.patrickmowrer.components.supportClasses
             {
                 var draggedTo:Point 
                     = contentGroup.globalToLocal(new Point(event.stageX, event.stageY));
+                draggedTo.offset(thumbPressOffset.x, thumbPressOffset.y);
                 
                 thumb.value = valueBasedLayout.pointToValue(draggedTo);
             }

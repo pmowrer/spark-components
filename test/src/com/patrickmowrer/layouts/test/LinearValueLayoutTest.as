@@ -35,6 +35,7 @@ package com.patrickmowrer.layouts.test
     import org.flexunit.rules.IMethodRule;
     import org.fluint.uiImpersonation.UIImpersonator;
     import org.hamcrest.assertThat;
+    import org.hamcrest.core.both;
     import org.hamcrest.object.equalTo;
     import org.morefluent.integrations.flexunit4.MorefluentRule;
     import org.morefluent.integrations.flexunit4.after;
@@ -125,27 +126,45 @@ package com.patrickmowrer.layouts.test
                 .assert(element, "y").equals(expected.y);
         }
         
-        public static var translate:Array = [   
+        public static var translateToValue:Array = [   
             // Point lies on line
-            [new Point(0.0, 0.0), new Point(1, 1), 20, 90, 0, 100, 10], 
-            [new Point(0.1, 0.1), new Point(0.9, 0.9), 80, 60, 0, 100, 37.5],
-            [new Point(0.1, 0.9), new Point(0.9, 0.1), 60, 30, 0, 100, 25],
+            [new Point(0.0, 0.0), new Point(1, 1), new Point(20, 10), 10], 
+            [new Point(0.1, 0.1), new Point(0.9, 0.9), new Point(80, 40), 37.5],
+            [new Point(0.1, 0.9), new Point(0.9, 0.1), new Point(60, 70), 25],
             // Point lies outside line but within container
-            [new Point(0.0, 0.0), new Point(1, 1), 20, 10, 0, 100, 10], 
-            [new Point(0.0, 0.0), new Point(1, 1), 100, 90, 0, 100, 50], 
+            [new Point(0.0, 0.0), new Point(1, 1), new Point(20, 10), 10], 
+            [new Point(0.0, 0.0), new Point(1, 1), new Point(100, 50), 50], 
             // Point lies outside container
-            [new Point(0.0, 0.0), new Point(1, 1), 20, 101, 0, 100, 10]  ];
+            [new Point(0.0, 0.0), new Point(1, 1), new Point(20, 101), 10]  ];
         
-        [Test(dataProvider="translate")]
+        [Test(dataProvider="translateToValue")]
         public function translatesContainerRelativeCoordinateToValue
-            (start:Point, end:Point, containerX:Number, containerY:Number, min:Number, max:Number, expected:Number):void
+            (start:Point, end:Point, containerCoord:Point, expected:Number):void
         {   
             layout = new LinearValueLayout(start, end);
-            layout.minimum = min;
-            layout.maximum = max;
             group.layout = layout;
             
-            assertThat(layout.pointToValue(new Point(containerX, containerY)), equalTo(expected));
+            assertThat(layout.pointToValue(containerCoord), equalTo(expected));
+        }
+        
+        public static var translateToPoint:Array = [   
+            [10, new Point(0.0, 0.0), new Point(1, 1), new Point(20, 10)], 
+            [37.5, new Point(0.1, 0.1), new Point(0.9, 0.9), new Point(80, 40)],
+            [25, new Point(0.1, 0.9), new Point(0.9, 0.1), new Point(60, 70)],
+            [10, new Point(0.0, 0.0), new Point(1, 1), new Point(20, 10)], 
+            [50, new Point(0.0, 0.0), new Point(1, 1), new Point(100, 50)], 
+            // Value is outside min-max range
+            [101, new Point(0.0, 0.0), new Point(1, 1), new Point(200, 100)]  ];
+        
+        [Test(dataProvider="translateToPoint")]
+        public function translatesValueToContainerRelativeCoordinate
+            (value:Number, start:Point, end:Point, expected:Point):void
+        {   
+            layout = new LinearValueLayout(start, end);
+            group.layout = layout;
+            
+            assertThat(layout.valueToPoint(value).x, equalTo(expected.x));
+            assertThat(layout.valueToPoint(value).y, equalTo(expected.y));
         }
         
         public static var boundedByMin:Array = [	

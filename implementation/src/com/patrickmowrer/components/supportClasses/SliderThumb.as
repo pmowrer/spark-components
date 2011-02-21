@@ -72,7 +72,6 @@ package com.patrickmowrer.components.supportClasses
         private var valueChanged:Boolean = false;
         
         private var valueRange:ValueRange;
-        private var clickOffset:Point;
         private var animation:SliderThumbAnimation;
         
         private var isDragging:Boolean;
@@ -243,9 +242,6 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.addEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler);  
             
             var globalClick:Point = new Point(event.stageX, event.stageY);
-            var localClick:Point = globalToLocal(globalClick);
-            
-            clickOffset = new Point(localClick.x, localClick.y);
             isDragging = true;
             
             dispatchThumbEvent(ThumbMouseEvent.PRESS, globalClick);     
@@ -256,10 +252,7 @@ package com.patrickmowrer.components.supportClasses
         
         private function systemMouseMoveHandler(event:MouseEvent):void
         {
-            var mouseMovedTo:Point = 
-                new Point(event.stageX - clickOffset.x, event.stageY - clickOffset.y);
-          
-            dispatchThumbEvent(ThumbMouseEvent.DRAGGING, mouseMovedTo);
+            dispatchThumbEvent(ThumbMouseEvent.DRAGGING,  new Point(event.stageX, event.stageY));
         }
         
         private function systemMouseUpHandler(event:MouseEvent):void
@@ -270,7 +263,6 @@ package com.patrickmowrer.components.supportClasses
             sandboxRoot.removeEventListener(MouseEvent.MOUSE_UP, systemMouseUpHandler, true);
             sandboxRoot.removeEventListener(SandboxMouseEvent.MOUSE_UP_SOMEWHERE, systemMouseUpHandler); 
             
-            clickOffset = null;
             isDragging = false;    
         
             dispatchThumbEvent(ThumbMouseEvent.RELEASE, new Point(event.stageX, event.stageY));

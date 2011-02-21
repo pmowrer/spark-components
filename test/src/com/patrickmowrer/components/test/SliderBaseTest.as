@@ -274,4 +274,9 @@ internal class ValueBasedLayoutDummy extends LayoutBase implements ValueLayout
     {
         return 0;
     }
+    
+    public function valueToPoint(value:Number):Point
+    {
+        return new Point();
+    }
 }

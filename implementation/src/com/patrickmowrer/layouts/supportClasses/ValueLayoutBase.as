@@ -72,6 +72,11 @@ package com.patrickmowrer.layouts.supportClasses
             throw new IllegalOperationError("pointToValue must be overriden in sub-class.");
         }
         
+        public function valueToPoint(value:Number):Point
+        {
+            throw new IllegalOperationError("valueToPoint must be overriden in sub-class.");
+        }
+        
         protected function get valueRange():ValueRange
         {
             return _valueRange;

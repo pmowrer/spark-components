@@ -63,6 +63,7 @@ package com.patrickmowrer.layouts.supportClasses
     
             var ratio:Number;
             
+            // Is straight horiz line? Else x-based calculation will do just as well as y-based.
             if(deltaX != 0)
             {
                 ratio = (point.x - (start.x * target.getLayoutBoundsWidth())) / 
@@ -75,6 +76,14 @@ package com.patrickmowrer.layouts.supportClasses
             }
             
             return valueRange.getNearestValidValueFromRatio(ratio);
+        }
+        
+        override public function valueToPoint(value:Number):Point
+        {
+            if(!target)
+                return new Point();
+            
+            return calculatePointFromValue(value, target.getLayoutBoundsWidth(), target.getLayoutBoundsHeight());
         }
         
         override public function updateDisplayList(width:Number, height:Number):void
@@ -90,18 +99,26 @@ package com.patrickmowrer.layouts.supportClasses
                 if(element is ValueCarrying)
                 {
                     var value:Number = ValueCarrying(element).value;
-                    var ratio:Number = valueRange.getNearestValidRatioFromValue(value);
                     var elementXOffset:Number = getElementWidth(element) * elementOffsetRatio.x;
                     var elementYOffset:Number = getElementHeight(element) * elementOffsetRatio.y;
-                    var x:Number = (start.x * width) + elementXOffset + deltaX * width * ratio;
-                    var y:Number = (start.y * height) + elementYOffset + deltaY * height * ratio;
+                    var elementPosition:Point = calculatePointFromValue(value, width, height);
+                    elementPosition.offset(elementXOffset, elementYOffset);
 
                     element.setLayoutBoundsSize(NaN, NaN);
-                    element.setLayoutBoundsPosition(x, y);
+                    element.setLayoutBoundsPosition(elementPosition.x, elementPosition.y);
                 }
             }
         }
         
+        protected function calculatePointFromValue(value:Number, width:Number, height:Number):Point
+        {
+            var ratio:Number = valueRange.getNearestValidRatioFromValue(value);
+            var x:Number = (start.x * width) + deltaX * width * ratio;
+            var y:Number = (start.y * height) + deltaY * height * ratio;
+
+            return new Point(x, y);
+        }        
+
         protected function getElementWidth(element:IVisualElement):Number
         {
             if(element.getLayoutBoundsWidth() > 0)
