@@ -344,24 +344,18 @@ package com.patrickmowrer.components.supportClasses
         }
         
         private function thumbMouseDownHandler(event:MouseEvent):void
-        {
-            visuallyMoveToFront(event.currentTarget as IVisualElement);
+        {                    
+            visuallyMoveToFront(IVisualElement(event.currentTarget));
         }
         
         private function visuallyMoveToFront(instance:IVisualElement):void
         {
-            setAllElementsToSameDepth(0);
-            instance.depth = 1;
+            var lastIndexElement:IVisualElement = getElementAt(numElements - 1);
+            
+            if(instance != lastIndexElement)
+                swapElements(instance, lastIndexElement);
         }
-        
-        private function setAllElementsToSameDepth(value:Number):void
-        {
-            for(var index:int = 0; index < numElements; index++)
-            {
-                getElementAt(index).depth = value;
-            }
-        }
-        
+
         private function thumbBeginDragHandler(event:ThumbDragEvent):void
         {
             if(animating)
