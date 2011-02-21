@@ -36,6 +36,7 @@ package com.patrickmowrer.layouts.supportClasses
         private var end:Point;
         private var deltaX:Number;
         private var deltaY:Number;
+        private var elementOffsetRatio:Point;
         
         public function LinearValueLayout(start:Point, end:Point)
         {
@@ -46,6 +47,13 @@ package com.patrickmowrer.layouts.supportClasses
             
             deltaX = end.x - start.x;
             deltaY = end.y - start.y;
+            
+            elementOffsetRatio = new Point();
+        }
+        
+        public function set elementAlignment(value:Point):void
+        {
+            elementOffsetRatio = value;
         }
         
         override public function pointToValue(point:Point):Number
@@ -83,8 +91,10 @@ package com.patrickmowrer.layouts.supportClasses
                 {
                     var value:Number = ValueCarrying(element).value;
                     var ratio:Number = valueRange.getNearestValidRatioFromValue(value);
-                    var x:Number = (start.x * width) + deltaX * width * ratio;
-                    var y:Number = (start.y * height) + deltaY * height * ratio;
+                    var elementXOffset:Number = getElementWidth(element) * elementOffsetRatio.x;
+                    var elementYOffset:Number = getElementHeight(element) * elementOffsetRatio.y;
+                    var x:Number = (start.x * width) + elementXOffset + deltaX * width * ratio;
+                    var y:Number = (start.y * height) + elementYOffset + deltaY * height * ratio;
 
                     element.setLayoutBoundsSize(NaN, NaN);
                     element.setLayoutBoundsPosition(x, y);
@@ -92,27 +102,7 @@ package com.patrickmowrer.layouts.supportClasses
             }
         }
         
-        private function horizontalMovementRangeFor(element:IVisualElement, width:Number):Number
-        {
-            var delta:Number = width - getElementWidth(element);
-            
-            if(delta > 0)
-                return delta;
-            else
-                return 0;
-        }
-        
-        private function verticalMovementRangeFor(element:IVisualElement, height:Number):Number
-        {
-            var delta:Number = height - getElementHeight(element);
-            
-            if(delta > 0)
-                return delta;
-            else
-                return 0;
-        }
-        
-        private function getElementWidth(element:IVisualElement):Number
+        protected function getElementWidth(element:IVisualElement):Number
         {
             if(element.getLayoutBoundsWidth() > 0)
                 return element.getLayoutBoundsWidth();
@@ -120,7 +110,7 @@ package com.patrickmowrer.layouts.supportClasses
                 return element.getPreferredBoundsWidth();
         }
         
-        private function getElementHeight(element:IVisualElement):Number
+        protected function getElementHeight(element:IVisualElement):Number
         {
             if(element.getLayoutBoundsHeight() > 0)
                 return element.getLayoutBoundsHeight();
