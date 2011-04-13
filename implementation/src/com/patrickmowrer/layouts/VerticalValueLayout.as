@@ -32,7 +32,7 @@ package com.patrickmowrer.layouts
     {
         public function VerticalValueLayout()
         {
-            super(new Point(0, 0), new Point(0, 1));
+            super(new Point(0, 1), new Point(0, 0));
         }
     }
 }
