@@ -5,6 +5,9 @@
 
 ## Changelist:
 
+### 0.1.2
+* Fixed an issue with VerticalValueLayout which was making the VSlider convenience component run top-to-bottom in terms of min/max rather than vice-versa.
+
 ### 0.1.1
 * Refactored HorizontalValueLayout and VerticalValueLayout into LinearValueLayout. This should enable easy creation of sliders between any two points, not just horizontal and vertical planes.
 
