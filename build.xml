@@ -46,7 +46,7 @@
         <delete dir="${report.flexunit.dir}" />
     </target>
 
-    <target name="init">
+    <target name="init" depends="clean">
         <mkdir dir="${dist.dir}" />
         <mkdir dir="${dist.bin.dir}" />
         <mkdir dir="${dist.doc.dir}" />
