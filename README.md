@@ -5,6 +5,11 @@
 
 ## Changelist:
 
+### 0.1.3
+* Fixed bug giving thumbs NaN value when min and max are set to same value.
+* Fixed bug where setting minimum and maximum at same time could limit either based on previous minimum/maximum value.
+* Fixed bug where clicking on track in a negative value range would cause null exception.
+
 ### 0.1.2
 * Fixed an issue with VerticalValueLayout which was making the VSlider convenience component run top-to-bottom in terms of min/max rather than vice-versa.
 
