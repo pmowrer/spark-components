@@ -201,6 +201,29 @@ package com.patrickmowrer.components.supportClasses
             }
         }
         
+        public function nearestThumbTo(value:Number):SliderThumb
+        {           
+            var nearestValue:Number = NaN;
+            var nearestThumb:SliderThumb;
+            
+            for(var index:int = 0; index < numberOfThumbs; index++)
+            {
+                var thumb:SliderThumb = getThumbAt(index);
+                var valueDelta:Number = Math.abs(thumb.value - value);
+                
+                var valueInRange:Boolean 
+                = allowOverlap || (thumb.minimum <= value && thumb.maximum >= value)
+                
+                if(isNaN(nearestValue) || (valueDelta < nearestValue && valueInRange))
+                {
+                    nearestValue = valueDelta;
+                    nearestThumb = thumb;
+                }
+            } 
+            
+            return nearestThumb;
+        }
+        
         override protected function partAdded(partName:String, instance:Object):void
         {
             super.partAdded(partName, instance);
@@ -502,29 +525,6 @@ package com.patrickmowrer.components.supportClasses
                 else
                     nearestThumb.value = trackClickValue;
             }
-        }
-        
-        private function nearestThumbTo(value:Number):SliderThumb
-        {           
-            var nearestValue:Number = valueBasedLayout.maximum;
-            var nearestThumb:SliderThumb;
-            
-            for(var index:int = 0; index < numberOfThumbs; index++)
-            {
-                var thumb:SliderThumb = getThumbAt(index);
-                var valueDelta:Number = Math.abs(thumb.value - value);
-                
-                var valueInRange:Boolean 
-                    = allowOverlap || (thumb.minimum <= value && thumb.maximum >= value)
-                
-                if(valueDelta < nearestValue && valueInRange)
-                {
-                    nearestValue = valueDelta;
-                    nearestThumb = thumb;
-                }
-            } 
-            
-            return nearestThumb;
         }
         
         private function beginThumbAnimation(thumb:SliderThumb, value:Number):void

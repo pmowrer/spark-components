@@ -46,6 +46,7 @@ package com.patrickmowrer.components.test
     
     import spark.layouts.supportClasses.LayoutBase;
 
+    [RunWith("org.flexunit.runners.Parameterized")]
     public class SliderBaseTest
     {
         [Rule]
@@ -210,7 +211,8 @@ package com.patrickmowrer.components.test
             slider.allowOverlap = true;
             slider.values = [5, 10, 2];
             
-            after(FlexEvent.UPDATE_COMPLETE).on(slider).assert(slider, "values").equals([5, 10, 2]);
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .assert(slider, "values").equals([5, 10, 2]);
         }
         
         [Test(async)]
@@ -218,8 +220,33 @@ package com.patrickmowrer.components.test
         {
             slider.snapInterval = 4;
             
-            after(FlexEvent.UPDATE_COMPLETE).on(slider).assert(slider, "values").equals([-6, 22, 46, 70, 90]);
-        }        
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .assert(slider, "values").equals([-6, 22, 46, 70, 90]);
+        }
+        
+        public static var alignment:Array = [	
+        //  minimum,   maximum,  values,            nearestTo,   expected
+            [0,        100,      [0, 50, 100],      40,          50],
+            [-100,     10,       [-90, -50, 10],    -40,         -50]
+        ];
+        
+        [Test(dataProvider="alignment")]
+        public function reportsNearestThumbToValue
+            (minimum:Number, maximum:Number, values:Array, nearestTo:Number, expected:Number):void
+        {
+            slider.minimum = minimum;
+            slider.maximum = maximum;
+            slider.values = values;
+            
+            after(FlexEvent.UPDATE_COMPLETE).on(slider)
+                .call(nearestThumbToVerification, slider, nearestTo);
+            
+            function nearestThumbToVerification(slider:SliderBase, nearestTo:Number):void
+            {
+                var thumb:SliderThumb = slider.nearestThumbTo(nearestTo);
+                assertThat(thumb.value, equalTo(expected));
+            }
+        }
     }
 }
 
