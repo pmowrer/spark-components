@@ -1,6 +1,13 @@
 # Eclipse settings
-*.project
 *.settings/
+.project
+.metadata/
+
+# Flash Builder-generated
+.actionScriptProperties
+.flexProperties
+.flexLibProperties
+swfobject.js
 
 # Generated output
 *bin*/
