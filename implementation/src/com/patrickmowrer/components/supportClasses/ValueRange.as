@@ -100,7 +100,9 @@ package com.patrickmowrer.components.supportClasses
         
         public function getNearestValidRatioFromValue(value:Number):Number
         {
-            return (getNearestValidValueTo(value) - minimum) / boundsDelta;
+            var divisor:Number = boundsDelta == 0 ? 1 : boundsDelta;
+            
+            return (getNearestValidValueTo(value) - minimum) / divisor;
         }
         
         public function getNearestValidValueTo(value:Number):Number

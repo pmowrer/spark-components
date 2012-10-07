@@ -111,5 +111,14 @@ package com.patrickmowrer.components.test
             assertThat(valueRange.roundToNearestGreaterInterval(7), equalTo(7));
             assertThat(valueRange.roundToNearestGreaterInterval(-3.999999), equalTo(-1));        
         }
+        
+        [Test]
+        public function returnsValidRatioWhenMinAndMaxAreSameNumber():void
+        {
+            valueRange.minimum = 100;
+            valueRange.maximum = 100;
+            
+            assertThat(valueRange.getNearestValidRatioFromValue(100), equalTo(0));
+        }
     }
 }
