@@ -88,10 +88,10 @@ package com.patrickmowrer.components.test
             
             assertThat(slider, hasProperties(
                 {
-                    "values": array(99, 999, 9999),
-                    "minimum": 99,
-                    "maximum": 9999,
-                    "allowOverlap": true
+                    values: array(99, 999, 9999),
+                    minimum: 99,
+                    maximum: 9999,
+                    allowOverlap: true
                 }));
         }
         

@@ -256,10 +256,27 @@ package com.patrickmowrer.components.supportClasses
             {
                 if(valueBasedLayout)
                 {
-                    if(minimumChanged)
-                        valueBasedLayout.minimum = newMinimum;
-                    if(maximumChanged)
-                        valueBasedLayout.maximum = newMaximum;
+                    // The order in which min/max is set is important when
+                    // the layout bounds the new value based on the other
+                    // extreme, e.g. limiting a new maximum because it's
+                    // smaller than the old minimum, even though the new
+                    // minimum allows it.
+                    if(valueBasedLayout.minimum > newMaximum)
+                    {
+                        if(minimumChanged)
+                            valueBasedLayout.minimum = newMinimum;
+                        
+                        if(maximumChanged)
+                            valueBasedLayout.maximum = newMaximum;
+                    }
+                    else
+                    {
+                        if(maximumChanged)
+                            valueBasedLayout.maximum = newMaximum;
+                        
+                        if(minimumChanged)
+                            valueBasedLayout.minimum = newMinimum;
+                    }
                 }
 
                 if(thumb)

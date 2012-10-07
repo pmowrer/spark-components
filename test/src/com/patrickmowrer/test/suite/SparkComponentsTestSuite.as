@@ -24,6 +24,7 @@
 
 package com.patrickmowrer.test.suite
 {
+    import com.patrickmowrer.components.test.HSliderTest;
     import com.patrickmowrer.components.test.SliderBaseTest;
     import com.patrickmowrer.components.test.SliderDefaultsTest;
     import com.patrickmowrer.components.test.ThumbConstraintTest;
@@ -37,6 +38,7 @@ package com.patrickmowrer.test.suite
     [RunWith("org.flexunit.runners.Suite")]
     public class SparkComponentsTestSuite
     {
+        public var test9:HSliderTest;
         public var test1:SliderBaseTest;
         public var test2:SliderDefaultsTest;
         public var test3:ThumbConstraintTest;
